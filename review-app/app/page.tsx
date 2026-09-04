@@ -592,8 +592,8 @@ export default function Home() {
           if (!open) setEditorTarget(null);
         }}
       >
-        <SheetContent className="sm:max-w-xl">
-          <SheetHeader className="border-b px-6 py-5">
+        <SheetContent className="h-dvh max-h-dvh gap-0 overflow-hidden sm:max-w-xl">
+          <SheetHeader className="shrink-0 border-b px-6 py-5">
             <SheetTitle>
               {editorTarget?.mode === 'add' ? 'Add' : 'Edit'}{' '}
               {editorTarget?.kind === 'summary' ? 'Summary line' : 'Insight'}{' '}
@@ -603,7 +603,7 @@ export default function Home() {
               This change is included in the next saved revision.
             </SheetDescription>
           </SheetHeader>
-          <ScrollArea className="flex-1">
+          <ScrollArea className="min-h-0 flex-1 overscroll-contain">
             <div className="space-y-6 p-6">
               {editorTarget?.kind === 'insight' && (
                 <label htmlFor="insight-title" className="block space-y-2">
@@ -677,7 +677,7 @@ export default function Home() {
               </label>
             </div>
           </ScrollArea>
-          <SheetFooter className="border-t bg-muted/35 px-6 py-4 sm:flex-row sm:justify-end">
+          <SheetFooter className="mt-0 shrink-0 border-t bg-muted/35 px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:flex-row sm:justify-end">
             <Button variant="outline" onClick={() => setEditorTarget(null)}>
               Cancel
             </Button>
