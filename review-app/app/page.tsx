@@ -3,17 +3,26 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   Check,
-  ChevronRight,
-  CircleDot,
-  FileText,
   Download,
-  GitBranch,
+  FilePlus2,
+  FileText,
   Lightbulb,
   PencilLine,
-  Search,
+  Plus,
   Sparkles,
+  Trash2,
 } from 'lucide-react';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,30 +40,30 @@ import { sampleReviews } from '@/lib/sample-data';
 import type { Review } from '@/lib/review-types';
 import { cn } from '@/lib/utils';
 
-type EditTarget = { kind: 'summary' | 'insight'; id: string } | null;
+type ItemKind = 'summary' | 'insight';
+type EditorTarget = { kind: ItemKind; id: string; mode: 'add' | 'edit' } | null;
+type DeleteTarget = { kind: ItemKind; id: string } | null;
 
 function statusLabel(status: Review['status']) {
   if (status === 'completed') return 'Completed';
   if (status === 'in_review') return 'In review';
-  return 'Ready for review';
+  return 'Ready';
 }
 
-function timeLabel(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return 'recently';
-  return date.toLocaleString('en', {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
+function nextItemId(ids: string[], prefix: 'L' | 'I') {
+  const highest = ids.reduce((maximum, id) => {
+    const value = Number(id.slice(1));
+    return Number.isFinite(value) ? Math.max(maximum, value) : maximum;
+  }, 0);
+  return `${prefix}${String(highest + 1).padStart(3, '0')}`;
 }
 
 export default function Home() {
   const [reviews, setReviews] = useState<Review[]>(sampleReviews);
   const [activeId, setActiveId] = useState(sampleReviews[0].id);
   const [selectedInsight, setSelectedInsight] = useState('I003');
-  const [editTarget, setEditTarget] = useState<EditTarget>(null);
+  const [editorTarget, setEditorTarget] = useState<EditorTarget>(null);
+  const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null);
   const [draftText, setDraftText] = useState('');
   const [draftTitle, setDraftTitle] = useState('');
   const [draftEvidence, setDraftEvidence] = useState('');
@@ -67,15 +76,21 @@ export default function Home() {
 
   const active = reviews.find((review) => review.id === activeId) ?? reviews[0];
   const selected =
-    active.insights.find((insight) => insight.id === selectedInsight) ??
-    active.insights[0];
+    active?.insights.find((insight) => insight.id === selectedInsight) ??
+    active?.insights[0];
   const evidence = useMemo(() => new Set(selected?.evidence ?? []), [selected]);
+  const referencesToDelete =
+    deleteTarget?.kind === 'summary'
+      ? (active?.insights.filter((insight) =>
+          insight.evidence.includes(deleteTarget.id),
+        ).length ?? 0)
+      : 0;
 
   useEffect(() => {
     let cancelled = false;
     fetch('/api/reviews')
       .then(async (response) => {
-        if (!response.ok) throw new Error('Unable to load the review queue.');
+        if (!response.ok) throw new Error('Unable to load reviews.');
         return response.json() as Promise<{ reviews: Review[] }>;
       })
       .then(({ reviews: loaded }) => {
@@ -96,15 +111,30 @@ export default function Home() {
     };
   }, []);
 
-  function chooseReview(review: Review) {
-    setActiveId(review.id);
+  if (!active) return null;
+
+  function chooseReview(id: string) {
+    const review = reviews.find((item) => item.id === id);
+    if (!review) return;
+    setActiveId(id);
     setSelectedInsight(review.insights[0]?.id ?? '');
-    setDirty(false);
     setPendingNotes([]);
+    setDirty(false);
     setSaveState('idle');
   }
 
-  function openEditor(kind: 'summary' | 'insight', id: string) {
+  function updateActive(transform: (review: Review) => Review, note: string) {
+    setReviews((current) =>
+      current.map((review) =>
+        review.id === active.id ? transform(review) : review,
+      ),
+    );
+    setPendingNotes((current) => [...current, note]);
+    setDirty(true);
+    setSaveState('idle');
+  }
+
+  function openEditor(kind: ItemKind, id: string) {
     if (kind === 'summary') {
       const line = active.summaryLines.find((item) => item.id === id);
       if (!line) return;
@@ -119,11 +149,29 @@ export default function Home() {
       setDraftEvidence(insight.evidence.join(', '));
     }
     setChangeNote('');
-    setEditTarget({ kind, id });
+    setEditorTarget({ kind, id, mode: 'edit' });
   }
 
-  function applyEdit() {
-    if (!editTarget || !draftText.trim()) return;
+  function openCreate(kind: ItemKind) {
+    const id =
+      kind === 'summary'
+        ? nextItemId(
+            active.summaryLines.map((line) => line.id),
+            'L',
+          )
+        : nextItemId(
+            active.insights.map((insight) => insight.id),
+            'I',
+          );
+    setDraftText('');
+    setDraftTitle('');
+    setDraftEvidence('');
+    setChangeNote('');
+    setEditorTarget({ kind, id, mode: 'add' });
+  }
+
+  function applyEditor() {
+    if (!editorTarget || !draftText.trim()) return;
     const allowedLines = new Set(active.summaryLines.map((line) => line.id));
     const nextEvidence = draftEvidence
       .split(',')
@@ -132,44 +180,96 @@ export default function Home() {
         (value, index, values) =>
           allowedLines.has(value) && values.indexOf(value) === index,
       );
+    const action = editorTarget.mode === 'add' ? 'Added' : 'Edited';
+    const note = changeNote.trim() || `${action} ${editorTarget.id}`;
 
-    setReviews((current) =>
-      current.map((review) => {
-        if (review.id !== active.id) return review;
-        if (editTarget.kind === 'summary') {
+    updateActive((review) => {
+      if (editorTarget.kind === 'summary') {
+        if (editorTarget.mode === 'add') {
           return {
             ...review,
-            summaryLines: review.summaryLines.map((line) =>
-              line.id === editTarget.id
-                ? { ...line, text: draftText.trim() }
-                : line,
-            ),
+            summaryLines: [
+              ...review.summaryLines,
+              {
+                id: editorTarget.id,
+                originalText: '',
+                text: draftText.trim(),
+              },
+            ],
           };
         }
         return {
           ...review,
-          insights: review.insights.map((insight) =>
-            insight.id === editTarget.id
-              ? {
-                  ...insight,
-                  title: draftTitle.trim() || insight.title,
-                  text: draftText.trim(),
-                  evidence: nextEvidence.length
-                    ? nextEvidence
-                    : insight.evidence,
-                }
-              : insight,
+          summaryLines: review.summaryLines.map((line) =>
+            line.id === editorTarget.id
+              ? { ...line, text: draftText.trim() }
+              : line,
           ),
         };
-      }),
-    );
-    setPendingNotes((current) => [
-      ...current,
-      changeNote.trim() || `Edited ${editTarget.id}`,
-    ]);
-    setDirty(true);
-    setSaveState('idle');
-    setEditTarget(null);
+      }
+
+      if (editorTarget.mode === 'add') {
+        return {
+          ...review,
+          insights: [
+            ...review.insights,
+            {
+              id: editorTarget.id,
+              title: draftTitle.trim() || 'Untitled insight',
+              originalText: '',
+              text: draftText.trim(),
+              evidence: nextEvidence,
+              status: 'pending',
+            },
+          ],
+        };
+      }
+      return {
+        ...review,
+        insights: review.insights.map((insight) =>
+          insight.id === editorTarget.id
+            ? {
+                ...insight,
+                title: draftTitle.trim() || insight.title,
+                text: draftText.trim(),
+                evidence: nextEvidence,
+              }
+            : insight,
+        ),
+      };
+    }, note);
+
+    if (editorTarget.kind === 'insight') {
+      setSelectedInsight(editorTarget.id);
+    }
+    setEditorTarget(null);
+  }
+
+  function confirmDelete() {
+    if (!deleteTarget) return;
+    const target = deleteTarget;
+    updateActive((review) => {
+      if (target.kind === 'summary') {
+        return {
+          ...review,
+          summaryLines: review.summaryLines.filter(
+            (line) => line.id !== target.id,
+          ),
+          insights: review.insights.map((insight) => ({
+            ...insight,
+            evidence: insight.evidence.filter((id) => id !== target.id),
+          })),
+        };
+      }
+      const insights = review.insights.filter(
+        (insight) => insight.id !== target.id,
+      );
+      if (selectedInsight === target.id) {
+        setSelectedInsight(insights[0]?.id ?? '');
+      }
+      return { ...review, insights };
+    }, `Removed ${target.id}`);
+    setDeleteTarget(null);
   }
 
   async function persist(status: Review['status']) {
@@ -202,33 +302,35 @@ export default function Home() {
     }
   }
 
-  if (!active) return null;
-
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <header className="flex h-16 items-center justify-between border-b border-border/80 bg-card px-4 sm:px-5 lg:px-7">
-        <div className="flex min-w-0 items-center gap-4">
-          <div className="flex items-center gap-2.5 font-semibold tracking-[-0.02em]">
-            <span className="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-              <Sparkles className="size-4" />
-            </span>
-            <span>Oxygen</span>
+      <header className="flex min-h-16 flex-wrap items-center justify-between gap-3 border-b bg-card px-4 py-3 sm:px-6">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+            <Sparkles className="size-4" />
+          </span>
+          <div>
+            <p className="text-sm font-semibold leading-none">Oxygen Review</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Edit the final Summary and Insights
+            </p>
           </div>
-          <div className="hidden h-5 w-px bg-border sm:block" />
-          <div className="hidden items-center gap-2 text-sm text-muted-foreground md:flex">
-            <span>Contributor Kit</span>
-            <ChevronRight className="size-3.5" />
-            <span className="font-medium text-foreground">Human review</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge
-            className="hidden border-emerald-200 bg-emerald-50 text-emerald-700 lg:inline-flex"
-            variant="outline"
+          <select
+            aria-label="Choose project"
+            value={active.id}
+            onChange={(event) => chooseReview(event.target.value)}
+            className="ml-2 h-9 max-w-56 rounded-lg border bg-background px-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <CircleDot className="size-3 fill-emerald-500 text-emerald-500" />
-            {statusLabel(active.status)}
-          </Badge>
+            {reviews.map((review) => (
+              <option key={review.id} value={review.id}>
+                {review.projectName}
+              </option>
+            ))}
+          </select>
+          <Badge variant="secondary">{statusLabel(active.status)}</Badge>
+        </div>
+
+        <div className="flex items-center gap-2">
           <span
             className={cn(
               'hidden text-xs sm:inline',
@@ -240,361 +342,315 @@ export default function Home() {
             {saveState === 'saving'
               ? 'Saving…'
               : saveState === 'saved'
-                ? 'Saved as a new revision'
+                ? `Saved · revision ${active.revisionCount}`
                 : saveState === 'error'
-                  ? 'Could not reach review service'
+                  ? 'Could not save'
                   : dirty
-                    ? 'Unsaved edits'
-                    : ''}
+                    ? 'Unsaved changes'
+                    : `Revision ${active.revisionCount}`}
           </span>
           <Button
             variant="ghost"
-            size="lg"
             render={
               <a
                 href={`/api/reviews/${active.id}/export`}
                 download
-                aria-label="Download reviewed Markdown"
+                aria-label="Export reviewed Markdown"
               />
             }
           >
             <Download data-icon="inline-start" />
-            <span className="hidden xl:inline">Export .md</span>
+            Export
           </Button>
           <Button
             variant="outline"
-            size="lg"
-            disabled={saveState === 'saving'}
+            disabled={saveState === 'saving' || !dirty}
             onClick={() => persist('in_review')}
           >
-            Save draft
+            Save
           </Button>
           <Button
-            size="lg"
             disabled={saveState === 'saving'}
             onClick={() => persist('completed')}
           >
             <Check data-icon="inline-start" />
-            <span className="hidden sm:inline">Complete review</span>
-            <span className="sm:hidden">Complete</span>
+            Complete
           </Button>
         </div>
       </header>
 
-      <div className="grid min-h-[calc(100vh-4rem)] grid-cols-1 lg:grid-cols-[250px_minmax(0,1fr)]">
-        <aside className="hidden border-r border-border/80 bg-sidebar lg:flex lg:flex-col">
-          <div className="p-4">
-            <div className="mb-4 flex items-center justify-between px-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                Review queue
-              </p>
-              <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
-                {reviews.length}
-              </span>
-            </div>
-            <div className="mb-3 flex h-9 items-center gap-2 rounded-lg border border-border bg-card px-3 text-muted-foreground shadow-xs">
-              <Search className="size-3.5" />
-              <span className="text-xs">Find a run…</span>
-            </div>
-            <nav className="space-y-1" aria-label="Review runs">
-              {reviews.map((review) => (
-                <button
-                  type="button"
-                  key={review.id}
-                  onClick={() => chooseReview(review)}
-                  className={cn(
-                    'w-full rounded-xl px-3 py-3 text-left transition-colors',
-                    review.id === active.id
-                      ? 'bg-card shadow-[0_1px_0_rgb(20_33_26/5%),0_3px_14px_rgb(20_33_26/6%)] ring-1 ring-border'
-                      : 'hover:bg-card/70',
-                  )}
-                >
-                  <span className="mb-1 flex items-center gap-2 text-sm font-medium">
-                    <GitBranch
-                      className={cn(
-                        'size-3.5',
-                        review.id === active.id
-                          ? 'text-primary'
-                          : 'text-muted-foreground',
-                      )}
-                    />
-                    {review.projectName}
-                  </span>
-                  <span className="flex items-center justify-between pl-[22px] text-[11px] text-muted-foreground">
-                    <span>
-                      {review.summaryLines.length} lines ·{' '}
-                      {review.insights.length} insights
-                    </span>
-                    {review.revisionCount > 0 && (
-                      <span>r{review.revisionCount}</span>
-                    )}
-                  </span>
-                </button>
-              ))}
-            </nav>
-          </div>
-          <div className="mt-auto border-t border-border/80 p-5 text-xs leading-5 text-muted-foreground">
-            Original output is preserved.
-            <br />
-            Every save becomes a revision.
-          </div>
-        </aside>
-
-        <section className="min-w-0 p-4 sm:p-6 lg:p-7">
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
-                <span>{active.id}</span>
-                <span>·</span>
-                <span>Generated {timeLabel(active.generatedAt)}</span>
-              </div>
-              <h1 className="text-2xl font-semibold tracking-[-0.035em]">
-                {active.projectName}
+      <div className="grid min-h-[calc(100vh-4rem)] grid-cols-1 xl:grid-cols-[minmax(0,1.15fr)_minmax(380px,.85fr)]">
+        <section
+          className="min-w-0 border-b xl:border-b-0 xl:border-r"
+          aria-labelledby="summary-heading"
+        >
+          <div className="flex h-14 items-center justify-between border-b bg-muted/30 px-4 sm:px-6">
+            <div className="flex items-center gap-2">
+              <FileText className="size-4 text-muted-foreground" />
+              <h1 id="summary-heading" className="font-semibold">
+                Summary
               </h1>
+              <Badge variant="secondary">{active.summaryLines.length}</Badge>
             </div>
-            <div className="text-right text-xs leading-5 text-muted-foreground">
-              <p>Select an insight to trace its evidence.</p>
-              <p>
-                {active.sourcePath} · revision {active.revisionCount}
-              </p>
-            </div>
-          </div>
-
-          <div className="grid min-h-[calc(100vh-10.75rem)] overflow-hidden rounded-2xl border border-border bg-card shadow-[0_12px_40px_rgb(31_47_38/7%)] xl:grid-cols-[minmax(0,1.25fr)_minmax(380px,.75fr)]">
-            <section
-              className="min-w-0 border-b border-border xl:border-b-0 xl:border-r"
-              aria-labelledby="summary-heading"
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => openCreate('summary')}
             >
-              <div className="flex h-14 items-center justify-between border-b border-border bg-muted/35 px-5">
-                <div className="flex items-center gap-2">
-                  <FileText className="size-4 text-muted-foreground" />
-                  <h2 id="summary-heading" className="text-sm font-semibold">
-                    Summary
-                  </h2>
-                  <Badge variant="secondary">
-                    {active.summaryLines.length} lines
-                  </Badge>
-                </div>
-                <span className="text-xs text-muted-foreground">
-                  Click a line to edit
-                </span>
-              </div>
-              <ScrollArea className="h-[560px] xl:h-[calc(100vh-14.3rem)]">
-                <ol className="space-y-1 p-3 sm:p-4">
-                  {active.summaryLines.map((line) => {
-                    const highlighted = evidence.has(line.id);
-                    const modified = line.text !== line.originalText;
-                    return (
-                      <li
-                        id={line.id}
-                        key={line.id}
+              <Plus data-icon="inline-start" /> Add line
+            </Button>
+          </div>
+          <ScrollArea className="h-[560px] xl:h-[calc(100vh-7.5rem)]">
+            {active.summaryLines.length ? (
+              <ol className="space-y-1 p-3 sm:p-5">
+                {active.summaryLines.map((line) => {
+                  const highlighted = evidence.has(line.id);
+                  const added = !line.originalText;
+                  const modified = added || line.text !== line.originalText;
+                  return (
+                    <li
+                      id={line.id}
+                      key={line.id}
+                      className={cn(
+                        'grid grid-cols-[52px_minmax(0,1fr)_68px] gap-3 rounded-xl border border-transparent px-3 py-3 transition-colors',
+                        highlighted
+                          ? 'border-[color:var(--evidence-border)] bg-[color:var(--evidence-bg)] shadow-[inset_3px_0_0_var(--evidence-accent)]'
+                          : 'hover:bg-muted/40',
+                      )}
+                    >
+                      <code
                         className={cn(
-                          'group grid scroll-mt-4 grid-cols-[52px_1fr_28px] gap-3 rounded-xl border border-transparent px-3 py-3.5 transition-all duration-200',
+                          'pt-1 text-xs font-semibold',
                           highlighted
-                            ? 'border-[color:var(--evidence-border)] bg-[color:var(--evidence-bg)] shadow-[inset_3px_0_0_var(--evidence-accent)]'
-                            : 'hover:bg-muted/45',
+                            ? 'text-[color:var(--evidence-strong)]'
+                            : 'text-muted-foreground',
                         )}
                       >
-                        <code
-                          className={cn(
-                            'pt-0.5 text-[11px] font-semibold',
-                            highlighted
-                              ? 'text-[color:var(--evidence-strong)]'
-                              : 'text-muted-foreground',
-                          )}
-                        >
-                          {line.id}
-                        </code>
-                        <div>
-                          <p className="text-[13px] leading-6 text-foreground/90">
-                            {line.text}
-                          </p>
-                          {modified && (
-                            <span className="mt-1 inline-block text-[10px] font-semibold uppercase tracking-wider text-[color:var(--insight-strong)]">
-                              Human edited
-                            </span>
-                          )}
-                        </div>
+                        {line.id}
+                      </code>
+                      <div className="min-w-0">
+                        <p className="text-base leading-7">{line.text}</p>
+                        {modified && (
+                          <span className="mt-1 inline-block text-[10px] font-semibold uppercase tracking-wider text-[color:var(--insight-strong)]">
+                            {added ? 'Added by reviewer' : 'Edited'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-start gap-1">
                         <Button
                           aria-label={`Edit ${line.id}`}
                           variant="ghost"
                           size="icon-sm"
-                          className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
                           onClick={() => openEditor('summary', line.id)}
                         >
                           <PencilLine />
                         </Button>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </ScrollArea>
-            </section>
+                        <Button
+                          aria-label={`Remove ${line.id}`}
+                          variant="ghost"
+                          size="icon-sm"
+                          className="text-muted-foreground hover:text-destructive"
+                          onClick={() =>
+                            setDeleteTarget({ kind: 'summary', id: line.id })
+                          }
+                        >
+                          <Trash2 />
+                        </Button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ol>
+            ) : (
+              <EmptyState
+                label="No Summary lines yet"
+                onAdd={() => openCreate('summary')}
+              />
+            )}
+          </ScrollArea>
+        </section>
 
-            <section className="min-w-0" aria-labelledby="insights-heading">
-              <div className="flex h-14 items-center justify-between border-b border-border bg-muted/35 px-5">
-                <div className="flex items-center gap-2">
-                  <Lightbulb className="size-4 text-muted-foreground" />
-                  <h2 id="insights-heading" className="text-sm font-semibold">
-                    Insights
-                  </h2>
-                  <Badge variant="secondary">{active.insights.length}</Badge>
-                </div>
-                <span className="text-xs text-muted-foreground">
-                  {
-                    active.insights.filter((item) => item.status === 'accepted')
-                      .length
-                  }{' '}
-                  accepted
-                </span>
-              </div>
-              <ScrollArea className="h-[620px] xl:h-[calc(100vh-14.3rem)]">
-                <div className="space-y-3 p-4">
-                  {active.insights.map((insight) => {
-                    const selectedNow = insight.id === selected?.id;
-                    const modified = insight.text !== insight.originalText;
-                    return (
-                      <article
-                        key={insight.id}
-                        className={cn(
-                          'group relative rounded-xl border p-4 transition-all',
-                          selectedNow
-                            ? 'border-[color:var(--insight-border)] bg-[color:var(--insight-bg)] shadow-[0_6px_20px_rgb(49_46_129/8%)]'
-                            : 'border-border bg-card hover:-translate-y-0.5 hover:shadow-md',
-                        )}
+        <section className="min-w-0" aria-labelledby="insights-heading">
+          <div className="flex h-14 items-center justify-between border-b bg-muted/30 px-4 sm:px-6">
+            <div className="flex items-center gap-2">
+              <Lightbulb className="size-4 text-muted-foreground" />
+              <h2 id="insights-heading" className="font-semibold">
+                Insights
+              </h2>
+              <Badge variant="secondary">{active.insights.length}</Badge>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => openCreate('insight')}
+            >
+              <Plus data-icon="inline-start" /> Add insight
+            </Button>
+          </div>
+          <ScrollArea className="h-[620px] xl:h-[calc(100vh-7.5rem)]">
+            {active.insights.length ? (
+              <div className="space-y-3 p-4 sm:p-5">
+                {active.insights.map((insight) => {
+                  const selectedNow = insight.id === selected?.id;
+                  const added = !insight.originalText;
+                  const modified =
+                    added || insight.text !== insight.originalText;
+                  return (
+                    <article
+                      key={insight.id}
+                      className={cn(
+                        'rounded-xl border p-4 transition-colors',
+                        selectedNow
+                          ? 'border-[color:var(--insight-border)] bg-[color:var(--insight-bg)]'
+                          : 'bg-card hover:bg-muted/30',
+                      )}
+                    >
+                      <button
+                        type="button"
+                        className="w-full text-left"
+                        onClick={() => setSelectedInsight(insight.id)}
                       >
-                        <button
-                          type="button"
-                          className="absolute inset-0 rounded-xl"
-                          aria-label={`Show evidence for ${insight.id}`}
-                          onClick={() => setSelectedInsight(insight.id)}
-                        />
-                        <div className="pointer-events-none relative">
-                          <div className="mb-2 flex items-center justify-between gap-3">
-                            <span
-                              className={cn(
-                                'font-mono text-[11px] font-bold tracking-wide',
-                                selectedNow
-                                  ? 'text-[color:var(--insight-strong)]'
-                                  : 'text-muted-foreground',
-                              )}
-                            >
+                        <div className="mb-2 flex items-start justify-between gap-3">
+                          <div>
+                            <span className="font-mono text-xs font-bold text-muted-foreground">
                               {insight.id}
                             </span>
-                            <div className="flex items-center gap-2">
-                              {modified && (
-                                <span className="text-[10px] font-semibold uppercase tracking-wider text-[color:var(--insight-strong)]">
-                                  Edited
-                                </span>
-                              )}
-                              {insight.status === 'accepted' && (
-                                <span className="flex items-center gap-1 text-[11px] font-medium text-emerald-700">
-                                  <Check className="size-3" /> accepted
-                                </span>
-                              )}
-                            </div>
+                            <h3 className="mt-1 font-semibold">
+                              {insight.title}
+                            </h3>
                           </div>
-                          <h3 className="mb-2 pr-7 text-sm font-semibold tracking-[-0.01em]">
-                            {insight.title}
-                          </h3>
-                          <p className="text-xs leading-5 text-muted-foreground">
-                            {insight.text}
-                          </p>
-                          <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                            <span className="mr-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                              Evidence
+                          {modified && (
+                            <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-[color:var(--insight-strong)]">
+                              {added ? 'Added' : 'Edited'}
                             </span>
-                            {insight.evidence.map((line) => (
+                          )}
+                        </div>
+                        <p className="text-base leading-7 text-muted-foreground">
+                          {insight.text}
+                        </p>
+                      </button>
+
+                      <div className="mt-4 flex items-end justify-between gap-3 border-t pt-3">
+                        <div className="flex min-w-0 flex-wrap gap-1.5">
+                          {insight.evidence.length ? (
+                            insight.evidence.map((line) => (
                               <span
                                 key={line}
-                                className={cn(
-                                  'rounded-md border px-1.5 py-0.5 font-mono text-[10px] font-semibold',
-                                  selectedNow
-                                    ? 'border-[color:var(--evidence-border)] bg-[color:var(--evidence-bg)] text-[color:var(--evidence-strong)]'
-                                    : 'border-border bg-muted/60 text-muted-foreground',
-                                )}
+                                className="rounded-md border border-[color:var(--evidence-border)] bg-[color:var(--evidence-bg)] px-1.5 py-0.5 font-mono text-xs font-semibold text-[color:var(--evidence-strong)]"
                               >
                                 {line}
                               </span>
-                            ))}
-                          </div>
+                            ))
+                          ) : (
+                            <span className="text-xs text-muted-foreground">
+                              No evidence linked
+                            </span>
+                          )}
                         </div>
-                        <Button
-                          aria-label={`Edit ${insight.id}`}
-                          variant="ghost"
-                          size="icon-sm"
-                          className="absolute right-3 top-9 z-10 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
-                          onClick={() => openEditor('insight', insight.id)}
-                        >
-                          <PencilLine />
-                        </Button>
-                      </article>
-                    );
-                  })}
-                </div>
-              </ScrollArea>
-            </section>
-          </div>
+                        <div className="flex shrink-0 gap-1">
+                          <Button
+                            aria-label={`Edit ${insight.id}`}
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={() => openEditor('insight', insight.id)}
+                          >
+                            <PencilLine />
+                          </Button>
+                          <Button
+                            aria-label={`Remove ${insight.id}`}
+                            variant="ghost"
+                            size="icon-sm"
+                            className="text-muted-foreground hover:text-destructive"
+                            onClick={() =>
+                              setDeleteTarget({
+                                kind: 'insight',
+                                id: insight.id,
+                              })
+                            }
+                          >
+                            <Trash2 />
+                          </Button>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            ) : (
+              <EmptyState
+                label="No Insights yet"
+                onAdd={() => openCreate('insight')}
+              />
+            )}
+          </ScrollArea>
         </section>
       </div>
 
       <Sheet
-        open={Boolean(editTarget)}
+        open={Boolean(editorTarget)}
         onOpenChange={(open) => {
-          if (!open) setEditTarget(null);
+          if (!open) setEditorTarget(null);
         }}
       >
         <SheetContent className="sm:max-w-xl">
           <SheetHeader className="border-b px-6 py-5">
-            <SheetTitle>Edit {editTarget?.id}</SheetTitle>
+            <SheetTitle>
+              {editorTarget?.mode === 'add' ? 'Add' : 'Edit'}{' '}
+              {editorTarget?.kind === 'summary' ? 'Summary line' : 'Insight'}{' '}
+              {editorTarget?.id}
+            </SheetTitle>
             <SheetDescription>
-              Changes remain local until you save a draft or complete the
-              review.
+              This change is included in the next saved revision.
             </SheetDescription>
           </SheetHeader>
           <ScrollArea className="flex-1">
             <div className="space-y-6 p-6">
-              {editTarget?.kind === 'insight' && (
+              {editorTarget?.kind === 'insight' && (
                 <label htmlFor="insight-title" className="block space-y-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Insight title
+                    Title
                   </span>
                   <Input
                     id="insight-title"
                     value={draftTitle}
                     onChange={(event) => setDraftTitle(event.target.value)}
+                    placeholder="Insight title"
                   />
                 </label>
               )}
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Original generated text
-                </p>
-                <div className="rounded-xl border bg-muted/50 p-4 text-sm leading-6 text-muted-foreground">
-                  {editTarget?.kind === 'summary'
-                    ? active.summaryLines.find(
-                        (line) => line.id === editTarget.id,
-                      )?.originalText
-                    : active.insights.find(
-                        (insight) => insight.id === editTarget?.id,
-                      )?.originalText}
+              {editorTarget?.mode === 'edit' && (
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Original generated text
+                  </p>
+                  <div className="rounded-xl border bg-muted/50 p-4 text-sm leading-6 text-muted-foreground">
+                    {editorTarget.kind === 'summary'
+                      ? active.summaryLines.find(
+                          (line) => line.id === editorTarget.id,
+                        )?.originalText || 'Added during review'
+                      : active.insights.find(
+                          (insight) => insight.id === editorTarget.id,
+                        )?.originalText || 'Added during review'}
+                  </div>
                 </div>
-              </div>
+              )}
               <label htmlFor="reviewed-text" className="block space-y-2">
                 <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Reviewed text
+                  {editorTarget?.kind === 'summary'
+                    ? 'Line text'
+                    : 'Insight text'}
                 </span>
                 <Textarea
                   id="reviewed-text"
-                  className="min-h-40 resize-y leading-6"
+                  className="min-h-40 resize-y text-base leading-7"
                   value={draftText}
                   onChange={(event) => setDraftText(event.target.value)}
                 />
               </label>
-              {editTarget?.kind === 'insight' && (
+              {editorTarget?.kind === 'insight' && (
                 <label htmlFor="evidence-lines" className="block space-y-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Evidence lines
+                    Summary evidence
                   </span>
                   <Input
                     id="evidence-lines"
@@ -604,34 +660,71 @@ export default function Home() {
                     placeholder="L001, L004"
                   />
                   <span className="text-xs text-muted-foreground">
-                    Comma-separated Summary line IDs. Unknown lines are ignored.
+                    Comma-separated line IDs. Leave empty for no evidence.
                   </span>
                 </label>
               )}
               <label htmlFor="change-note" className="block space-y-2">
                 <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Why are you changing this?
+                  Revision note (optional)
                 </span>
                 <Textarea
                   id="change-note"
-                  className="min-h-24 resize-y"
+                  className="min-h-20 resize-y"
                   value={changeNote}
                   onChange={(event) => setChangeNote(event.target.value)}
-                  placeholder="Optional review note…"
                 />
               </label>
             </div>
           </ScrollArea>
           <SheetFooter className="border-t bg-muted/35 px-6 py-4 sm:flex-row sm:justify-end">
-            <Button variant="outline" onClick={() => setEditTarget(null)}>
+            <Button variant="outline" onClick={() => setEditorTarget(null)}>
               Cancel
             </Button>
-            <Button onClick={applyEdit} disabled={!draftText.trim()}>
-              Apply edit
+            <Button onClick={applyEditor} disabled={!draftText.trim()}>
+              {editorTarget?.mode === 'add' ? 'Add item' : 'Apply edit'}
             </Button>
           </SheetFooter>
         </SheetContent>
       </Sheet>
+
+      <AlertDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove {deleteTarget?.id}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteTarget?.kind === 'summary' && referencesToDelete > 0
+                ? `This line is cited by ${referencesToDelete} insight${referencesToDelete === 1 ? '' : 's'}. Those evidence links will also be removed.`
+                : 'The item will disappear from the reviewed output. The original generated version remains in revision history.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={confirmDelete}>
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
+  );
+}
+
+function EmptyState({ label, onAdd }: { label: string; onAdd: () => void }) {
+  return (
+    <div className="grid min-h-72 place-items-center p-8 text-center">
+      <div>
+        <FilePlus2 className="mx-auto mb-3 size-7 text-muted-foreground" />
+        <p className="mb-4 text-sm text-muted-foreground">{label}</p>
+        <Button variant="outline" onClick={onAdd}>
+          <Plus data-icon="inline-start" /> Add one
+        </Button>
+      </div>
+    </div>
   );
 }

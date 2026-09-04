@@ -74,36 +74,6 @@ function mapReview(row: ReviewRow): Review {
 async function ensureDatabase() {
   if (initialized) return;
   const db = database();
-  await db.batch([
-    db.prepare(`CREATE TABLE IF NOT EXISTS reviews (
-      id TEXT PRIMARY KEY,
-      project_name TEXT NOT NULL,
-      source_path TEXT NOT NULL,
-      status TEXT NOT NULL,
-      generated_at TEXT NOT NULL,
-      original_summary_json TEXT NOT NULL,
-      original_insights_json TEXT NOT NULL,
-      current_summary_json TEXT NOT NULL,
-      current_insights_json TEXT NOT NULL,
-      created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
-    )`),
-    db.prepare(`CREATE TABLE IF NOT EXISTS review_revisions (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      review_id TEXT NOT NULL,
-      revision_number INTEGER NOT NULL,
-      summary_json TEXT NOT NULL,
-      insights_json TEXT NOT NULL,
-      note TEXT NOT NULL,
-      status TEXT NOT NULL,
-      created_at TEXT NOT NULL
-    )`),
-    db.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS idx_review_revisions_review_number
-      ON review_revisions(review_id, revision_number)`),
-    db.prepare(`CREATE INDEX IF NOT EXISTS idx_reviews_status_updated
-      ON reviews(status, updated_at DESC)`),
-  ]);
-
   const count = await db
     .prepare('SELECT COUNT(*) AS count FROM reviews')
     .first<{ count: number }>();
