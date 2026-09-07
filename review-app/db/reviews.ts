@@ -8,6 +8,7 @@ import type {
   ReviewSavePayload,
   SummaryLine,
 } from '@/lib/review-types';
+import { parseSummary, validateSummaryGroups } from '@/lib/summary-format';
 
 type ReviewRow = {
   id: string;
@@ -17,8 +18,10 @@ type ReviewRow = {
   generated_at: string;
   original_summary_json: string;
   original_insights_json: string;
+  original_hierarchy_json: string;
   current_summary_json: string;
   current_insights_json: string;
+  current_hierarchy_json: string;
   updated_at: string;
   revision_count: number;
 };
@@ -37,6 +40,15 @@ function parseJson<T>(value: string): T {
 function mapReview(row: ReviewRow): Review {
   const originalSummary = parseJson<SummaryLine[]>(row.original_summary_json);
   const originalInsights = parseJson<Insight[]>(row.original_insights_json);
+  const originalHierarchy = parseJson<
+    Pick<Review, 'trajectorySummary' | 'summaryGroups'>
+  >(row.original_hierarchy_json);
+  const currentHierarchy = parseJson<
+    Pick<Review, 'trajectorySummary' | 'summaryGroups'>
+  >(row.current_hierarchy_json);
+  const originalGroupsById = new Map(
+    originalHierarchy.summaryGroups.map((group) => [group.id, group.text]),
+  );
   const originalSummaryById = new Map(
     originalSummary.map((line) => [line.id, line.text]),
   );
@@ -52,6 +64,17 @@ function mapReview(row: ReviewRow): Review {
     generatedAt: row.generated_at,
     updatedAt: row.updated_at,
     revisionCount: Number(row.revision_count || 0),
+    trajectorySummary: {
+      ...currentHierarchy.trajectorySummary,
+      originalText:
+        originalHierarchy.trajectorySummary.text ||
+        currentHierarchy.trajectorySummary.originalText,
+    },
+    summaryGroups: currentHierarchy.summaryGroups.map((group) => ({
+      ...group,
+      originalText:
+        originalGroupsById.get(group.id) ?? group.originalText ?? group.text,
+    })),
     summaryLines: parseJson<SummaryLine[]>(row.current_summary_json).map(
       (line) => ({
         ...line,
@@ -83,8 +106,9 @@ async function ensureDatabase() {
         .prepare(`INSERT OR IGNORE INTO reviews (
         id, project_name, source_path, status, generated_at,
         original_summary_json, original_insights_json,
-        current_summary_json, current_insights_json, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+        original_hierarchy_json, current_summary_json, current_insights_json,
+        current_hierarchy_json, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
         .bind(
           review.id,
           review.projectName,
@@ -93,8 +117,16 @@ async function ensureDatabase() {
           review.generatedAt,
           JSON.stringify(review.summaryLines),
           JSON.stringify(review.insights),
+          JSON.stringify({
+            trajectorySummary: review.trajectorySummary,
+            summaryGroups: review.summaryGroups,
+          }),
           JSON.stringify(review.summaryLines),
           JSON.stringify(review.insights),
+          JSON.stringify({
+            trajectorySummary: review.trajectorySummary,
+            summaryGroups: review.summaryGroups,
+          }),
           review.generatedAt,
           review.updatedAt,
         ),
@@ -116,21 +148,6 @@ export async function listReviews(): Promise<Review[]> {
       reviews.updated_at DESC`)
     .all<ReviewRow>();
   return result.results.map(mapReview);
-}
-
-function parseSummary(markdown: string): SummaryLine[] {
-  const lines: SummaryLine[] = [];
-  for (const rawLine of markdown.split(/\r?\n/)) {
-    const match = rawLine.trim().match(/^(L\d{3,})\s+(.+)$/);
-    if (match) {
-      lines.push({ id: match[1], originalText: match[2], text: match[2] });
-    } else if (rawLine.trim() && lines.length) {
-      const previous = lines[lines.length - 1];
-      previous.originalText += ` ${rawLine.trim()}`;
-      previous.text = previous.originalText;
-    }
-  }
-  return lines;
 }
 
 function parseInsights(markdown: string, summaryIds: Set<string>): Insight[] {
@@ -175,12 +192,19 @@ export async function createReview(
   payload: ReviewCreatePayload,
 ): Promise<Review> {
   await ensureDatabase();
-  const summaryLines = parseSummary(payload.summaryMarkdown);
+  const { trajectorySummary, summaryGroups, summaryLines } = parseSummary(
+    payload.summaryMarkdown,
+  );
   const summaryIds = new Set(summaryLines.map((line) => line.id));
   const insights = parseInsights(payload.insightMarkdown, summaryIds);
-  if (!summaryLines.length || !insights.length) {
+  if (
+    !trajectorySummary.text ||
+    !summaryLines.length ||
+    !validateSummaryGroups(summaryGroups, summaryLines) ||
+    !insights.length
+  ) {
     throw new Error(
-      'The Markdown does not contain valid Summary lines and evidence-linked Insights.',
+      'The Markdown does not contain a valid trajectory summary, contiguous Summary groups, Summary lines, and evidence-linked Insights.',
     );
   }
 
@@ -196,8 +220,9 @@ export async function createReview(
     .prepare(`INSERT INTO reviews (
     id, project_name, source_path, status, generated_at,
     original_summary_json, original_insights_json,
-    current_summary_json, current_insights_json, created_at, updated_at
-  ) VALUES (?, ?, ?, 'ready', ?, ?, ?, ?, ?, ?, ?)`)
+    original_hierarchy_json, current_summary_json, current_insights_json,
+    current_hierarchy_json, created_at, updated_at
+  ) VALUES (?, ?, ?, 'ready', ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
     .bind(
       reviewId,
       payload.projectName.trim(),
@@ -205,8 +230,10 @@ export async function createReview(
       now,
       JSON.stringify(summaryLines),
       JSON.stringify(insights),
+      JSON.stringify({ trajectorySummary, summaryGroups }),
       JSON.stringify(summaryLines),
       JSON.stringify(insights),
+      JSON.stringify({ trajectorySummary, summaryGroups }),
       now,
       now,
     )
@@ -237,26 +264,40 @@ export async function saveRevision(
   const createdAt = new Date().toISOString();
   const summaryJson = JSON.stringify(payload.summaryLines);
   const insightsJson = JSON.stringify(payload.insights);
+  const hierarchyJson = JSON.stringify({
+    trajectorySummary: payload.trajectorySummary,
+    summaryGroups: payload.summaryGroups,
+  });
 
   await db.batch([
     db
       .prepare(`INSERT INTO review_revisions (
-      review_id, revision_number, summary_json, insights_json, note, status, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)`)
+      review_id, revision_number, summary_json, insights_json, hierarchy_json,
+      note, status, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
       .bind(
         reviewId,
         revision,
         summaryJson,
         insightsJson,
+        hierarchyJson,
         payload.note.trim(),
         payload.status,
         createdAt,
       ),
     db
       .prepare(`UPDATE reviews SET
-      current_summary_json = ?, current_insights_json = ?, status = ?, updated_at = ?
+      current_summary_json = ?, current_insights_json = ?,
+      current_hierarchy_json = ?, status = ?, updated_at = ?
       WHERE id = ?`)
-      .bind(summaryJson, insightsJson, payload.status, createdAt, reviewId),
+      .bind(
+        summaryJson,
+        insightsJson,
+        hierarchyJson,
+        payload.status,
+        createdAt,
+        reviewId,
+      ),
   ]);
 
   const reviews = await listReviews();
@@ -286,6 +327,15 @@ export async function exportReview(reviewId: string): Promise<string> {
         )
         .join('\n')
     : '- No human edits were recorded.';
+  const trajectorySummary = review.trajectorySummary.text;
+  const groups = review.summaryGroups
+    .map((group) => {
+      const first = group.lineIds[0];
+      const last = group.lineIds[group.lineIds.length - 1];
+      const references = first === last ? first : `${first}-${last}`;
+      return `## ${group.id}\nLines: ${references}\n\n${group.text}`;
+    })
+    .join('\n\n');
   const summary = review.summaryLines
     .map((line) => `${line.id} ${line.text}`)
     .join('\n');
@@ -300,5 +350,5 @@ export async function exportReview(reviewId: string): Promise<string> {
     )
     .join('\n\n');
 
-  return `# Human-reviewed Oxygen output\n\nProject: ${review.projectName}\nStatus: ${review.status}\n\n## Review changes\n\n${changeLog}\n\n## Final summary\n\n${summary}\n\n## Final insights\n\n${insights}\n`;
+  return `# Human-reviewed Oxygen output\n\nProject: ${review.projectName}\nStatus: ${review.status}\n\n## Review changes\n\n${changeLog}\n\n## Trajectory summary\n\n${trajectorySummary}\n\n## Summary groups\n\n${groups}\n\n## Summary lines\n\n${summary}\n\n## Final insights\n\n${insights}\n`;
 }

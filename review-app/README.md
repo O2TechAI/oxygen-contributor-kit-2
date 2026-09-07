@@ -23,7 +23,7 @@ database through Miniflare.
 {
   "projectName": "my-project",
   "sourcePath": "outputs/run-001",
-  "summaryMarkdown": "L001 ...",
+  "summaryMarkdown": "# Trajectory summary\n\n...\n\n# Summary groups\n\n## G001\nLines: L001-L004\n\n...\n\n# Summary lines\n\nL001 ...",
   "insightMarkdown": "# I001\nEvidence: L001\n\n..."
 }
 ```
@@ -31,6 +31,11 @@ database through Miniflare.
 `POST /api/reviews/:id/revisions` saves the full reviewed snapshot and appends
 a revision record. `GET /api/reviews/:id/export` returns the change log and
 latest reviewed Summary and Insights as Markdown.
+
+Each new `summaryMarkdown` must contain a non-empty Trajectory summary and
+ordered `Gxxx` groups that partition all `Lxxx` lines into contiguous,
+non-overlapping ranges. Existing flat-format reviews remain readable and
+editable after migration.
 
 The Python bridge at `../tools/publish-review.py` implements the registration
 call using only the Python standard library.

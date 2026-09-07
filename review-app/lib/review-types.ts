@@ -4,6 +4,18 @@ export type SummaryLine = {
   text: string;
 };
 
+export type TrajectorySummary = {
+  originalText: string;
+  text: string;
+};
+
+export type SummaryGroup = {
+  id: string;
+  originalText: string;
+  text: string;
+  lineIds: string[];
+};
+
 export type Insight = {
   id: string;
   title: string;
@@ -21,11 +33,15 @@ export type Review = {
   generatedAt: string;
   updatedAt: string;
   revisionCount: number;
+  trajectorySummary: TrajectorySummary;
+  summaryGroups: SummaryGroup[];
   summaryLines: SummaryLine[];
   insights: Insight[];
 };
 
 export type ReviewSavePayload = {
+  trajectorySummary: TrajectorySummary;
+  summaryGroups: SummaryGroup[];
   summaryLines: SummaryLine[];
   insights: Insight[];
   note: string;

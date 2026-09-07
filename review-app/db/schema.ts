@@ -6,6 +6,9 @@ import {
   uniqueIndex,
 } from 'drizzle-orm/sqlite-core';
 
+const emptyHierarchyJson =
+  '{"trajectorySummary":{"originalText":"","text":""},"summaryGroups":[]}';
+
 export const reviews = sqliteTable(
   'reviews',
   {
@@ -16,8 +19,14 @@ export const reviews = sqliteTable(
     generatedAt: text('generated_at').notNull(),
     originalSummaryJson: text('original_summary_json').notNull(),
     originalInsightsJson: text('original_insights_json').notNull(),
+    originalHierarchyJson: text('original_hierarchy_json')
+      .notNull()
+      .default(emptyHierarchyJson),
     currentSummaryJson: text('current_summary_json').notNull(),
     currentInsightsJson: text('current_insights_json').notNull(),
+    currentHierarchyJson: text('current_hierarchy_json')
+      .notNull()
+      .default(emptyHierarchyJson),
     createdAt: text('created_at').notNull(),
     updatedAt: text('updated_at').notNull(),
   },
@@ -34,6 +43,7 @@ export const reviewRevisions = sqliteTable(
     revisionNumber: integer('revision_number').notNull(),
     summaryJson: text('summary_json').notNull(),
     insightsJson: text('insights_json').notNull(),
+    hierarchyJson: text('hierarchy_json').notNull().default(emptyHierarchyJson),
     note: text('note').notNull(),
     status: text('status').notNull(),
     createdAt: text('created_at').notNull(),
