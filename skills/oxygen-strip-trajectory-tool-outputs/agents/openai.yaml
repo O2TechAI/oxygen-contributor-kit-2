@@ -1,0 +1,4 @@
+interface:
+  display_name: "Oxygen Strip Trajectory Tool Outputs"
+  short_description: "Remove explicit tool outputs from Codex rollouts"
+  default_prompt: "Use $oxygen-strip-trajectory-tool-outputs to create a local non-resumable copy of a Codex rollout without explicit tool outputs."
