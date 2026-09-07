@@ -37,12 +37,13 @@ import {
 } from '@/components/ui/sheet';
 import { Textarea } from '@/components/ui/textarea';
 import { sampleReviews } from '@/lib/sample-data';
-import type { Review } from '@/lib/review-types';
+import type { Review, SummaryLine } from '@/lib/review-types';
 import { cn } from '@/lib/utils';
 
-type ItemKind = 'summary' | 'insight';
+type ItemKind = 'trajectory' | 'group' | 'summary' | 'insight';
 type EditorTarget = { kind: ItemKind; id: string; mode: 'add' | 'edit' } | null;
-type DeleteTarget = { kind: ItemKind; id: string } | null;
+type DeleteTarget = { kind: 'summary' | 'insight'; id: string } | null;
+type CreatableItemKind = NonNullable<DeleteTarget>['kind'];
 
 function statusLabel(status: Review['status']) {
   if (status === 'completed') return 'Completed';
@@ -135,7 +136,17 @@ export default function Home() {
   }
 
   function openEditor(kind: ItemKind, id: string) {
-    if (kind === 'summary') {
+    if (kind === 'trajectory') {
+      setDraftText(active.trajectorySummary.text);
+      setDraftTitle('');
+      setDraftEvidence('');
+    } else if (kind === 'group') {
+      const group = active.summaryGroups.find((item) => item.id === id);
+      if (!group) return;
+      setDraftText(group.text);
+      setDraftTitle('');
+      setDraftEvidence('');
+    } else if (kind === 'summary') {
       const line = active.summaryLines.find((item) => item.id === id);
       if (!line) return;
       setDraftText(line.text);
@@ -152,7 +163,7 @@ export default function Home() {
     setEditorTarget({ kind, id, mode: 'edit' });
   }
 
-  function openCreate(kind: ItemKind) {
+  function openCreate(kind: CreatableItemKind) {
     const id =
       kind === 'summary'
         ? nextItemId(
@@ -184,10 +195,34 @@ export default function Home() {
     const note = changeNote.trim() || `${action} ${editorTarget.id}`;
 
     updateActive((review) => {
+      if (editorTarget.kind === 'trajectory') {
+        return {
+          ...review,
+          trajectorySummary: {
+            ...review.trajectorySummary,
+            text: draftText.trim(),
+          },
+        };
+      }
+      if (editorTarget.kind === 'group') {
+        return {
+          ...review,
+          summaryGroups: review.summaryGroups.map((group) =>
+            group.id === editorTarget.id
+              ? { ...group, text: draftText.trim() }
+              : group,
+          ),
+        };
+      }
       if (editorTarget.kind === 'summary') {
         if (editorTarget.mode === 'add') {
           return {
             ...review,
+            summaryGroups: review.summaryGroups.map((group, index, groups) =>
+              index === groups.length - 1
+                ? { ...group, lineIds: [...group.lineIds, editorTarget.id] }
+                : group,
+            ),
             summaryLines: [
               ...review.summaryLines,
               {
@@ -252,6 +287,12 @@ export default function Home() {
       if (target.kind === 'summary') {
         return {
           ...review,
+          summaryGroups: review.summaryGroups
+            .map((group) => ({
+              ...group,
+              lineIds: group.lineIds.filter((id) => id !== target.id),
+            }))
+            .filter((group) => group.lineIds.length),
           summaryLines: review.summaryLines.filter(
             (line) => line.id !== target.id,
           ),
@@ -279,6 +320,8 @@ export default function Home() {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
+          trajectorySummary: active.trajectorySummary,
+          summaryGroups: active.summaryGroups,
           summaryLines: active.summaryLines,
           insights: active.insights,
           note:
@@ -300,6 +343,62 @@ export default function Home() {
     } catch {
       setSaveState('error');
     }
+  }
+
+  function renderSummaryLine(line: SummaryLine) {
+    const highlighted = evidence.has(line.id);
+    const added = !line.originalText;
+    const modified = added || line.text !== line.originalText;
+    return (
+      <li
+        id={line.id}
+        key={line.id}
+        className={cn(
+          'grid grid-cols-[52px_minmax(0,1fr)_68px] gap-3 rounded-xl border border-transparent px-3 py-3 transition-colors',
+          highlighted
+            ? 'border-[color:var(--evidence-border)] bg-[color:var(--evidence-bg)] shadow-[inset_3px_0_0_var(--evidence-accent)]'
+            : 'hover:bg-muted/40',
+        )}
+      >
+        <code
+          className={cn(
+            'pt-1 text-xs font-semibold',
+            highlighted
+              ? 'text-[color:var(--evidence-strong)]'
+              : 'text-muted-foreground',
+          )}
+        >
+          {line.id}
+        </code>
+        <div className="min-w-0">
+          <p className="text-base leading-7">{line.text}</p>
+          {modified && (
+            <span className="mt-1 inline-block text-[10px] font-semibold uppercase tracking-wider text-[color:var(--insight-strong)]">
+              {added ? 'Added by reviewer' : 'Edited'}
+            </span>
+          )}
+        </div>
+        <div className="flex items-start gap-1">
+          <Button
+            aria-label={`Edit ${line.id}`}
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => openEditor('summary', line.id)}
+          >
+            <PencilLine />
+          </Button>
+          <Button
+            aria-label={`Remove ${line.id}`}
+            variant="ghost"
+            size="icon-sm"
+            className="text-muted-foreground hover:text-destructive"
+            onClick={() => setDeleteTarget({ kind: 'summary', id: line.id })}
+          >
+            <Trash2 />
+          </Button>
+        </div>
+      </li>
+    );
   }
 
   return (
@@ -402,65 +501,95 @@ export default function Home() {
           </div>
           <ScrollArea className="h-[560px] xl:h-[calc(100vh-7.5rem)]">
             {active.summaryLines.length ? (
-              <ol className="space-y-1 p-3 sm:p-5">
-                {active.summaryLines.map((line) => {
-                  const highlighted = evidence.has(line.id);
-                  const added = !line.originalText;
-                  const modified = added || line.text !== line.originalText;
-                  return (
-                    <li
-                      id={line.id}
-                      key={line.id}
-                      className={cn(
-                        'grid grid-cols-[52px_minmax(0,1fr)_68px] gap-3 rounded-xl border border-transparent px-3 py-3 transition-colors',
-                        highlighted
-                          ? 'border-[color:var(--evidence-border)] bg-[color:var(--evidence-bg)] shadow-[inset_3px_0_0_var(--evidence-accent)]'
-                          : 'hover:bg-muted/40',
-                      )}
-                    >
-                      <code
+              <div className="space-y-5 p-3 sm:p-5">
+                {active.trajectorySummary.text && (
+                  <article className="rounded-xl border bg-card p-5 shadow-sm">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          Trajectory summary
+                        </p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Contribution of this trajectory to the ongoing project
+                        </p>
+                      </div>
+                      <Button
+                        aria-label="Edit trajectory summary"
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => openEditor('trajectory', 'trajectory')}
+                      >
+                        <PencilLine />
+                      </Button>
+                    </div>
+                    <p className="text-lg leading-8">
+                      {active.trajectorySummary.text}
+                    </p>
+                  </article>
+                )}
+
+                {active.summaryGroups.length ? (
+                  active.summaryGroups.map((group) => {
+                    const groupLines = group.lineIds
+                      .map((id) =>
+                        active.summaryLines.find((line) => line.id === id),
+                      )
+                      .filter((line): line is SummaryLine => Boolean(line));
+                    const containsEvidence = group.lineIds.some((id) =>
+                      evidence.has(id),
+                    );
+                    const modified = group.text !== group.originalText;
+                    return (
+                      <section
+                        key={group.id}
                         className={cn(
-                          'pt-1 text-xs font-semibold',
-                          highlighted
-                            ? 'text-[color:var(--evidence-strong)]'
-                            : 'text-muted-foreground',
+                          'overflow-hidden rounded-xl border bg-card',
+                          containsEvidence &&
+                            'border-[color:var(--evidence-border)]',
                         )}
                       >
-                        {line.id}
-                      </code>
-                      <div className="min-w-0">
-                        <p className="text-base leading-7">{line.text}</p>
-                        {modified && (
-                          <span className="mt-1 inline-block text-[10px] font-semibold uppercase tracking-wider text-[color:var(--insight-strong)]">
-                            {added ? 'Added by reviewer' : 'Edited'}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-start gap-1">
-                        <Button
-                          aria-label={`Edit ${line.id}`}
-                          variant="ghost"
-                          size="icon-sm"
-                          onClick={() => openEditor('summary', line.id)}
+                        <div className="flex items-start gap-3 p-4 sm:p-5">
+                          <code className="pt-1 text-xs font-bold text-muted-foreground">
+                            {group.id}
+                          </code>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-base leading-7">{group.text}</p>
+                            {modified && (
+                              <span className="mt-1 inline-block text-[10px] font-semibold uppercase tracking-wider text-[color:var(--insight-strong)]">
+                                Edited
+                              </span>
+                            )}
+                          </div>
+                          <Button
+                            aria-label={`Edit ${group.id}`}
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={() => openEditor('group', group.id)}
+                          >
+                            <PencilLine />
+                          </Button>
+                        </div>
+                        <details
+                          key={`${group.id}-${selected?.id ?? 'none'}`}
+                          open={containsEvidence || undefined}
+                          className="border-t bg-muted/15"
                         >
-                          <PencilLine />
-                        </Button>
-                        <Button
-                          aria-label={`Remove ${line.id}`}
-                          variant="ghost"
-                          size="icon-sm"
-                          className="text-muted-foreground hover:text-destructive"
-                          onClick={() =>
-                            setDeleteTarget({ kind: 'summary', id: line.id })
-                          }
-                        >
-                          <Trash2 />
-                        </Button>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
+                          <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-muted-foreground marker:text-muted-foreground sm:px-5">
+                            {groupLines.length} detailed Summary lines
+                          </summary>
+                          <ol className="space-y-1 border-t p-2 sm:p-3">
+                            {groupLines.map(renderSummaryLine)}
+                          </ol>
+                        </details>
+                      </section>
+                    );
+                  })
+                ) : (
+                  <ol className="space-y-1 rounded-xl border bg-card p-2 sm:p-3">
+                    {active.summaryLines.map(renderSummaryLine)}
+                  </ol>
+                )}
+              </div>
             ) : (
               <EmptyState
                 label="No Summary lines yet"
@@ -596,8 +725,13 @@ export default function Home() {
           <SheetHeader className="shrink-0 border-b px-6 py-5">
             <SheetTitle>
               {editorTarget?.mode === 'add' ? 'Add' : 'Edit'}{' '}
-              {editorTarget?.kind === 'summary' ? 'Summary line' : 'Insight'}{' '}
-              {editorTarget?.id}
+              {editorTarget?.kind === 'trajectory'
+                ? 'Trajectory summary'
+                : editorTarget?.kind === 'group'
+                  ? `Summary group ${editorTarget.id}`
+                  : editorTarget?.kind === 'summary'
+                    ? `Summary line ${editorTarget.id}`
+                    : `Insight ${editorTarget?.id ?? ''}`}
             </SheetTitle>
             <SheetDescription>
               This change is included in the next saved revision.
@@ -624,13 +758,19 @@ export default function Home() {
                     Original generated text
                   </p>
                   <div className="rounded-xl border bg-muted/50 p-4 text-sm leading-6 text-muted-foreground">
-                    {editorTarget.kind === 'summary'
-                      ? active.summaryLines.find(
-                          (line) => line.id === editorTarget.id,
-                        )?.originalText || 'Added during review'
-                      : active.insights.find(
-                          (insight) => insight.id === editorTarget.id,
-                        )?.originalText || 'Added during review'}
+                    {editorTarget.kind === 'trajectory'
+                      ? active.trajectorySummary.originalText
+                      : editorTarget.kind === 'group'
+                        ? active.summaryGroups.find(
+                            (group) => group.id === editorTarget.id,
+                          )?.originalText || 'Added during review'
+                        : editorTarget.kind === 'summary'
+                          ? active.summaryLines.find(
+                              (line) => line.id === editorTarget.id,
+                            )?.originalText || 'Added during review'
+                          : active.insights.find(
+                              (insight) => insight.id === editorTarget.id,
+                            )?.originalText || 'Added during review'}
                   </div>
                 </div>
               )}
@@ -638,7 +778,9 @@ export default function Home() {
                 <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {editorTarget?.kind === 'summary'
                     ? 'Line text'
-                    : 'Insight text'}
+                    : editorTarget?.kind === 'insight'
+                      ? 'Insight text'
+                      : 'Summary text'}
                 </span>
                 <Textarea
                   id="reviewed-text"

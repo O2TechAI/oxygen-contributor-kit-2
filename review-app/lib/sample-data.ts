@@ -1,5 +1,21 @@
 import type { Review } from './review-types';
 
+function hierarchy(
+  trajectoryText: string,
+  groups: Array<{ id: string; text: string; lineIds: string[] }>,
+): Pick<Review, 'trajectorySummary' | 'summaryGroups'> {
+  return {
+    trajectorySummary: {
+      originalText: trajectoryText,
+      text: trajectoryText,
+    },
+    summaryGroups: groups.map((group) => ({
+      ...group,
+      originalText: group.text,
+    })),
+  };
+}
+
 export const sampleReviews: Review[] = [
   {
     id: 'run-024',
@@ -9,6 +25,26 @@ export const sampleReviews: Review[] = [
     generatedAt: '2026-09-03T20:42:00.000Z',
     updatedAt: '2026-09-03T20:42:00.000Z',
     revisionCount: 0,
+    ...hierarchy(
+      'This trajectory improved the candidate-review workflow by reducing provider latency and placing compatibility evidence beside live inventory results.',
+      [
+        {
+          id: 'G001',
+          text: 'Concurrent provider execution reduced retrieval latency while preserving a shared timeout boundary.',
+          lineIds: ['L001', 'L002', 'L003', 'L004'],
+        },
+        {
+          id: 'G002',
+          text: 'User feedback shifted the work from response-time optimization to reducing manual compatibility checks without caching time-sensitive inventory.',
+          lineIds: ['L005', 'L006', 'L007', 'L008'],
+        },
+        {
+          id: 'G003',
+          text: 'The final implementation combined concurrent retrieval, bounded timeouts, and visible compatibility evidence.',
+          lineIds: ['L009'],
+        },
+      ],
+    ),
     summaryLines: [
       {
         id: 'L001',
@@ -112,6 +148,16 @@ export const sampleReviews: Review[] = [
     generatedAt: '2026-09-03T18:18:00.000Z',
     updatedAt: '2026-09-03T19:05:00.000Z',
     revisionCount: 0,
+    ...hierarchy(
+      'This trajectory made provider failures independent so successful offers remain available with explicit source warnings.',
+      [
+        {
+          id: 'G001',
+          text: 'The implementation moved from whole-lookup failure to provider-level failure handling and verified that successful offers remain selectable.',
+          lineIds: ['L001', 'L002', 'L003', 'L004'],
+        },
+      ],
+    ),
     summaryLines: [
       {
         id: 'L001',
@@ -167,6 +213,16 @@ export const sampleReviews: Review[] = [
     generatedAt: '2026-09-02T16:10:00.000Z',
     updatedAt: '2026-09-02T17:44:00.000Z',
     revisionCount: 0,
+    ...hierarchy(
+      'This trajectory added visible evidence links to the review interface so reviewers can inspect support for each Insight in place.',
+      [
+        {
+          id: 'G001',
+          text: 'The accepted review design connects each Insight to highlighted Summary lines in a side-by-side view.',
+          lineIds: ['L001', 'L002', 'L003'],
+        },
+      ],
+    ),
     summaryLines: [
       {
         id: 'L001',

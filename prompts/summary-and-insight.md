@@ -11,6 +11,27 @@ The trajectory may be a conversation between a human and a coding agent or a tra
 
 # Stage A — Generate `summary.md`
 
+Build the Summary in the following order. Later levels must be derived from the completed earlier level.
+
+1. **Summary lines:** read the trajectory and write the fine-grained `Lxxx` lines described below.
+2. **Summary groups:** partition the completed lines into ordered groups. Each group must contain a contiguous range of lines, every line must belong to exactly one group, and group order must match line order. Write one concise paragraph that summarizes each group.
+3. **Trajectory summary:** summarize the group summaries in one concise paragraph.
+
+Treat the supplied trajectory as one new segment in a larger, continuing project history. The Trajectory summary should state what this segment added or changed in the project, including material decisions and unresolved questions. Do not attempt to summarize the complete project or imply that the project began or ended in this segment.
+
+## Clear-language instruction
+
+Apply these rules when compressing Summary lines into group summaries and group summaries into the Trajectory summary:
+
+1. Use established standard terms. Do not create a new label when a widely understood term already exists.
+2. Use direct descriptions. Do not use metaphors or wording that requires the reader to infer the referent.
+3. Use neutral nouns for headings, categories, and status labels, such as “Problem,” “Observation,” “Impact,” and “Result.” Keep status labels consistent across sections.
+4. Do not use contrast constructions in the form “X, not Y.” State the supported finding directly.
+5. Do not force every sentence to include a number or conclusion. A complete statement of what occurred is sufficient.
+6. When the cause has not been established, write “The cause was not determined.” Do not add an unverified explanation.
+7. Use formal, concise language. Avoid colloquial expressions.
+8. Describe system behavior directly. Do not personify models, metrics, infrastructure, or other non-human subjects.
+
 The Summary should preserve the information that is important for understanding what happened, especially information that captures meaningful state changes, actions, outcomes, and reasoning.
 
 A good Summary should be:
@@ -206,9 +227,9 @@ When a participant explicitly expresses an interpretation or conclusion and that
 
 ---
 
-## Summary line format
+## Fine-grained Summary line format
 
-Write `summary.md` as individually numbered lines:
+Write the fine-grained level as individually numbered lines:
 
 ```text
 L001 ...
@@ -303,13 +324,41 @@ Create exactly two files.
 
 ## `summary.md`
 
-Use numbered lines:
+Use this exact section order. Each group reference must use one contiguous range.
 
 ```markdown
+# Trajectory summary
+
+<one concise paragraph about what this trajectory added to the ongoing project>
+
+# Summary groups
+
+## G001
+
+Lines: L001-L006
+
+<one concise group summary>
+
+## G002
+
+Lines: L007-L012
+
+<one concise group summary>
+
+# Summary lines
+
 L001 ...
 L002 ...
 L003 ...
 ```
+
+Validate the hierarchy before finishing:
+
+* every group contains adjacent Summary lines;
+* groups are ordered and do not overlap;
+* every Summary line belongs to exactly one group;
+* each group summary is supported by its referenced lines;
+* the Trajectory summary is supported by the group summaries and is scoped to this trajectory's incremental contribution.
 
 ## `insight.md`
 
@@ -317,11 +366,13 @@ Use the following format:
 
 ```markdown
 # I001
+
 Evidence: L003, L007, L011
 
 <insight>
 
 # I002
+
 Evidence: L014, L018
 
 <insight>

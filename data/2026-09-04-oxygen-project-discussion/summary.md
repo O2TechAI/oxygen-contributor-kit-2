@@ -1,3 +1,47 @@
+# Trajectory summary
+
+This trajectory refined Oxygen's contributor workflow and evaluation plan by defining a smaller process for generation, human review, and export, identifying context-preservation and redaction constraints, and framing longitudinal personalized Insight prediction as the initial scalable evaluation. Downstream task evaluation and trajectory-derived benchmarks remain possible extensions, with reproducibility, topic comparability, annotation cost, and multiple valid Insights unresolved.
+
+# Summary groups
+
+## G001
+
+Lines: L001-L010
+
+The meeting reviewed a reduced Oxygen workflow for coding-agent sessions and meeting transcripts. The workflow preserves detailed project evidence in a line-level Summary, separates generated Insights, adds redaction and human review, and requires further testing and improved readability.
+
+## G002
+
+Lines: L011-L016
+
+Pipeline trials exposed context omissions, variable runtime, summaries centered on Agent actions, limited human verification, and excessive removal of technical detail during redaction. Summary and Insight generation occurs jointly before the dependency-preserving redaction pass.
+
+## G003
+
+Lines: L017-L023
+
+Participants considered human-reviewed Insight agreement and downstream task performance as evaluation targets. Manling favored extrinsic evaluation under a fixed learning budget, while mixed human-Agent behavior and limited labeling capacity made success-rate measurement difficult.
+
+## G004
+
+Lines: L024-L031
+
+A contributor-specific sequential prediction evaluation emerged from the discussion, using earlier approved Summary-Insight pairs to predict later Insights. Exact downstream replay remained operationally difficult because retained trajectories lack live environments, and the available personalized data may be insufficient for gains on general benchmarks.
+
+## G005
+
+Lines: L032-L039
+
+The evaluation target expanded to include cross-task operating knowledge, contributor preferences, domain knowledge, and task-specific knowledge. This mixture may support personalized held-out evaluation, while multiple valid Insights require evaluation methods that accept alternative annotations.
+
+## G006
+
+Lines: L040-L047
+
+The proposed initial evaluation uses each contributor's chronological 80/20 split, with topic comparability and preference stability requiring empirical validation. Trajectory-derived benchmarks remain a later option, and Oxygen's broader research value was identified as a longitudinal dataset of repeated interactions from the same contributors. The meeting output was selected for immediate multi-perspective review.
+
+# Summary lines
+
 L001 Zihan opened the meeting to consolidate recent Oxygen progress and introduced a new contributor who would participate in project design and development.
 L002 Zihan said the earlier contributor workflow tried to cover too many operations, took too long in practice, and had therefore been reduced to a much smaller toolkit and review interface.
 L003 Zihan described the current input scope as either coding-agent sessions or multi-person meeting transcripts, with output consisting of a line-by-line Summary and evidence-linked AI Insights.
