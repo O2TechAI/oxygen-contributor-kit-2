@@ -1,4 +1,5 @@
 import { saveRevision } from '@/db/reviews';
+import { isAuthenticated, unauthorizedResponse } from '@/lib/auth';
 import type { ReviewSavePayload } from '@/lib/review-types';
 import { validateSummaryGroups } from '@/lib/summary-format';
 
@@ -66,6 +67,7 @@ export async function POST(
   request: Request,
   context: { params: Promise<{ reviewId: string }> },
 ) {
+  if (!(await isAuthenticated(request))) return unauthorizedResponse();
   try {
     const payload: unknown = await request.json();
     if (!isValidPayload(payload)) {

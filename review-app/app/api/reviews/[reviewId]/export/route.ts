@@ -1,9 +1,11 @@
 import { exportReview } from '@/db/reviews';
+import { isAuthenticated, unauthorizedResponse } from '@/lib/auth';
 
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ reviewId: string }> },
 ) {
+  if (!(await isAuthenticated(request))) return unauthorizedResponse();
   try {
     const { reviewId } = await context.params;
     const markdown = await exportReview(reviewId);

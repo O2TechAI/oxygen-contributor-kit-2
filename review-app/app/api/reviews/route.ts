@@ -1,7 +1,9 @@
 import { createReview, listReviews } from '@/db/reviews';
+import { isAuthenticated, unauthorizedResponse } from '@/lib/auth';
 import type { ReviewCreatePayload } from '@/lib/review-types';
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (!(await isAuthenticated(request))) return unauthorizedResponse();
   try {
     return Response.json({ reviews: await listReviews() });
   } catch (error) {
@@ -23,6 +25,7 @@ function isCreatePayload(value: unknown): value is ReviewCreatePayload {
 }
 
 export async function POST(request: Request) {
+  if (!(await isAuthenticated(request))) return unauthorizedResponse();
   try {
     const payload: unknown = await request.json();
     if (!isCreatePayload(payload)) {

@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { type SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import {
   Check,
   Download,
   FilePlus2,
   FileText,
   Lightbulb,
+  LogOut,
   PencilLine,
   Plus,
   Sparkles,
@@ -36,7 +37,6 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Textarea } from '@/components/ui/textarea';
-import { sampleReviews } from '@/lib/sample-data';
 import type { Review, SummaryLine } from '@/lib/review-types';
 import { cn } from '@/lib/utils';
 
@@ -60,9 +60,16 @@ function nextItemId(ids: string[], prefix: 'L' | 'I') {
 }
 
 export default function Home() {
-  const [reviews, setReviews] = useState<Review[]>(sampleReviews);
-  const [activeId, setActiveId] = useState(sampleReviews[0].id);
-  const [selectedInsight, setSelectedInsight] = useState('I003');
+  const [authState, setAuthState] = useState<
+    'checking' | 'signed_out' | 'signed_in'
+  >('checking');
+  const [username, setUsername] = useState('Oxygen');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [loginPending, setLoginPending] = useState(false);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [activeId, setActiveId] = useState('');
+  const [selectedInsight, setSelectedInsight] = useState('');
   const [editorTarget, setEditorTarget] = useState<EditorTarget>(null);
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null);
   const [draftText, setDraftText] = useState('');
@@ -89,8 +96,36 @@ export default function Home() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/reviews')
+    fetch('/api/auth/session', { cache: 'no-store' })
       .then(async (response) => {
+        if (!response.ok) throw new Error('Unable to check session.');
+        return response.json() as Promise<{ authenticated: boolean }>;
+      })
+      .then(({ authenticated }) => {
+        if (!cancelled) {
+          setAuthState(authenticated ? 'signed_in' : 'signed_out');
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setLoginError('Unable to check the login session.');
+          setAuthState('signed_out');
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (authState !== 'signed_in') return;
+    let cancelled = false;
+    fetch('/api/reviews', { cache: 'no-store' })
+      .then(async (response) => {
+        if (response.status === 401) {
+          setAuthState('signed_out');
+          throw new Error('Authentication required.');
+        }
         if (!response.ok) throw new Error('Unable to load reviews.');
         return response.json() as Promise<{ reviews: Review[] }>;
       })
@@ -102,6 +137,13 @@ export default function Home() {
               ? current
               : loaded[0].id,
           );
+          setSelectedInsight((current) =>
+            loaded.some((review) =>
+              review.insights.some((insight) => insight.id === current),
+            )
+              ? current
+              : (loaded[0].insights[0]?.id ?? ''),
+          );
         }
       })
       .catch(() => {
@@ -110,9 +152,117 @@ export default function Home() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [authState]);
 
-  if (!active) return null;
+  async function handleLogin(event: SyntheticEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoginPending(true);
+    setLoginError('');
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      if (!response.ok) {
+        const result = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(result?.error || 'Unable to sign in.');
+      }
+      setPassword('');
+      setAuthState('signed_in');
+    } catch (error) {
+      setLoginError(
+        error instanceof Error ? error.message : 'Unable to sign in.',
+      );
+    } finally {
+      setLoginPending(false);
+    }
+  }
+
+  async function handleLogout() {
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => null);
+    setReviews([]);
+    setActiveId('');
+    setSelectedInsight('');
+    setPassword('');
+    setAuthState('signed_out');
+  }
+
+  if (authState === 'checking') {
+    return (
+      <main className="grid min-h-screen place-items-center bg-background px-6 text-foreground">
+        <div className="text-center">
+          <span className="mx-auto grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+            <Sparkles className="size-5" />
+          </span>
+          <p className="mt-4 text-sm text-muted-foreground">Checking access…</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (authState === 'signed_out') {
+    return (
+      <main className="grid min-h-screen place-items-center bg-background px-6 py-12 text-foreground">
+        <section className="w-full max-w-sm rounded-2xl border bg-card p-7 shadow-sm">
+          <span className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+            <Sparkles className="size-5" />
+          </span>
+          <h1 className="mt-6 text-2xl font-semibold tracking-tight">
+            Oxygen Review
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Sign in to review generated Summary and Insights.
+          </p>
+          <form className="mt-7 space-y-4" onSubmit={handleLogin}>
+            <label className="block space-y-2" htmlFor="login-username">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Account
+              </span>
+              <Input
+                id="login-username"
+                autoComplete="username"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                required
+              />
+            </label>
+            <label className="block space-y-2" htmlFor="login-password">
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Password
+              </span>
+              <Input
+                id="login-password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+            </label>
+            {loginError && (
+              <p role="alert" className="text-sm text-destructive">
+                {loginError}
+              </p>
+            )}
+            <Button className="w-full" type="submit" disabled={loginPending}>
+              {loginPending ? 'Signing in…' : 'Sign in'}
+            </Button>
+          </form>
+        </section>
+      </main>
+    );
+  }
+
+  if (!active) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-background px-6 text-foreground">
+        <p className="text-sm text-muted-foreground">Loading reviews…</p>
+      </main>
+    );
+  }
 
   function chooseReview(id: string) {
     const review = reviews.find((item) => item.id === id);
@@ -474,6 +624,10 @@ export default function Home() {
           >
             <Check data-icon="inline-start" />
             Complete
+          </Button>
+          <Button variant="ghost" onClick={handleLogout}>
+            <LogOut data-icon="inline-start" />
+            Sign out
           </Button>
         </div>
       </header>
