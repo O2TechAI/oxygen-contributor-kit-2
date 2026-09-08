@@ -1,0 +1,856 @@
+{
+  "batch_validated": false,
+  "configuration": {
+    "fork_turns": "none",
+    "helper_sha256": "afc7a78fafd5f4cf9f50a317ef144372bef14288578b3054329bd3338ecb3730",
+    "model": "gpt-5.6-sol",
+    "prompt_sha256": {
+      "redaction": "1aa354be5ffe5bfd865944293cd0cb14bd56a0161bd4e4ff75a9dbc38f9933e6",
+      "summary": "efea06626dcb0d6071d214c64815a9eb5ba157c6c1990e5bda98c7c44850f062"
+    },
+    "protocol_version": 1,
+    "reasoning_effort": "medium",
+    "template_sha256": {
+      "redaction": "9f212bc9d4338333c81cc5c17356440d5f88630e73e79aa0c6cab7c4c56c0f7a",
+      "summary": "8fb5b0356d1ec51cae6f3db78ee9f10762538c558cbe6e21e1f7ef9ec1def23e"
+    },
+    "tool": "collaboration.spawn_agent",
+    "tools_and_sandbox": "inherited from the host; not independently configurable by this tool"
+  },
+  "counts": {
+    "end_to_end_validation_passed": 2,
+    "inputs": 16,
+    "markdown_files": 62,
+    "original_input_bytes": 78151559,
+    "redaction_workers_completed": 15,
+    "summary_validation_passed": 15,
+    "summary_workers_completed": 16,
+    "validation_failed": 14,
+    "workers": 31
+  },
+  "execution_finished": true,
+  "items": [
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 261,
+          "sha256": "065b413023f9823cd6a92f4144bc1cb42746ea5199c71ab736c2b63765826194"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 545,
+          "sha256": "01215246f9ec4bae553a973e00cfc8397f8c2a8643e2ddf7754d428f2db67474"
+        },
+        "summary/insight.md": {
+          "bytes": 278,
+          "sha256": "7e93e8af464733d72240b7de6c8f8ed3f0fe5c2312d27e13c817f59fffedfcff"
+        },
+        "summary/summary.md": {
+          "bytes": 563,
+          "sha256": "0057055b48e622bc94ad8f3d44f3eba92320cecf43ee20805be007cd04930f7f"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 307893,
+      "input_integrity_verified": true,
+      "input_sha256": "8c086ed01d9e94309d638e204e7411748a77e6edf10026f54baac4c311455871",
+      "reason": "invalid_summary_line_ids",
+      "redaction_observed_counts": {
+        "insights": 1,
+        "numbered_ids_sequential": true,
+        "summary_lines": 2
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-001.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 1,
+        "numbered_ids_sequential": true,
+        "summary_lines": 2
+      },
+      "trajectory": "trajectory-001.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_87b186c07b513a9d",
+          "call_sha256": "c6175cb10514d2a96ee4c14e54ced60b125d68c6206d2533dac8513642f0b1ac",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_87b186c07b513a9d",
+          "call_sha256": "c95e9687224145d2de4793450a429ffbc3b769281c065399a03b6177f05d3030",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 2556,
+          "sha256": "8cdde89ad329df7b228eb082f0dcbcc3b8563b5e8512a45383ee7a2b344d3d02"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 4607,
+          "sha256": "389a22af6d7921fb3de3b89efd267783efb4dea2aea364543465a7ce5b5a1459"
+        },
+        "summary/insight.md": {
+          "bytes": 3523,
+          "sha256": "5bc283b14af90a5658b21c053bfc2c9b0236a4492fb8b392649e588fba8eb9fb"
+        },
+        "summary/summary.md": {
+          "bytes": 15909,
+          "sha256": "f13d09bb656b367270a409308ac58f3dc0ab215e778fafd0b59a7733e8d2d87d"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 3637766,
+      "input_integrity_verified": true,
+      "input_sha256": "3294e260e397fc7317807e414b871342f6dfbaf1738550c517a86ffde6679c74",
+      "reason": "invalid_summary_sections",
+      "redaction_observed_counts": {
+        "insights": 8,
+        "numbered_ids_sequential": true,
+        "summary_lines": 22
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-002.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 9,
+        "numbered_ids_sequential": true,
+        "summary_lines": 57
+      },
+      "trajectory": "trajectory-002.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_4333ac97fe996a10",
+          "call_sha256": "bc9e613892addec09d5a3b3812065f10d4dc8beb7705f6c5e529ea19893e0237",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_4333ac97fe996a10",
+          "call_sha256": "b42a4c3328b7ac9910625e295a518ec5d5b9311bef6358719bf16522db848668",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 2869,
+          "sha256": "9a2db0855048023880cffe80e6c3f55bcbe9e6c6a8cfed9fbde1d46088feee7a"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 5854,
+          "sha256": "9bab02a70c95112cdb71b97dfbac23d17e11a69710465817c79c40142b916a56"
+        },
+        "summary/insight.md": {
+          "bytes": 4706,
+          "sha256": "41449f16dacef300980a305af824dd10445e6cad7a0736d4c990ffbc442cd260"
+        },
+        "summary/summary.md": {
+          "bytes": 16042,
+          "sha256": "cd7f9cbb1e4b61a52cafd29280364ff70b244a1f4103c7c9aea8db8322aca5ae"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 3849254,
+      "input_integrity_verified": true,
+      "input_sha256": "e666667d9858881914eed6c805e32ad39d710aa13609367798991f51bd047fe0",
+      "reason": "invalid_summary_sections",
+      "redaction_observed_counts": {
+        "insights": 10,
+        "numbered_ids_sequential": true,
+        "summary_lines": 22
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-003.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 10,
+        "numbered_ids_sequential": true,
+        "summary_lines": 50
+      },
+      "trajectory": "trajectory-003.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_9cc2abd85b1fd06e",
+          "call_sha256": "d2e985cc0af62a930b3c696b380508470f731cf559ed41a3c59c7faa89c51c55",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_9cc2abd85b1fd06e",
+          "call_sha256": "b857180f9d4eb92d7955c93715d4b66a1b10963e6767f7715e6b7fc0f06fe75a",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 2827,
+          "sha256": "37a3da3312b8a7da53356bc787ea92aaaa0f9449e287be019d46291faa1e6aac"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 6317,
+          "sha256": "dd191d123d172b66c1474e5929266f649a42035a016dcc0a0f9ec55d5c4d6c33"
+        },
+        "summary/insight.md": {
+          "bytes": 3519,
+          "sha256": "94b7038803aeed1bf6f256ac63b2691a26ad5ad819832e1bcbe3fa4330ee5224"
+        },
+        "summary/summary.md": {
+          "bytes": 13916,
+          "sha256": "a48a4a25ecbd5bdf8d200b0d767e7a9747f8561686f177e317075f3a25aef3ce"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 4750671,
+      "input_integrity_verified": true,
+      "input_sha256": "c721da08f366b22e51e38746f4311146aec42e90b6e0a6f6518b9bd75eaa0b05",
+      "reason": "invalid_summary_sections",
+      "redaction_observed_counts": {
+        "insights": 10,
+        "numbered_ids_sequential": true,
+        "summary_lines": 33
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-004.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 10,
+        "numbered_ids_sequential": true,
+        "summary_lines": 47
+      },
+      "trajectory": "trajectory-004.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_40e61ab5ce937dd0",
+          "call_sha256": "9f3213e5dcb45168710843fd1b92b82a449bef16237b47eb714684418fb14ffe",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_40e61ab5ce937dd0",
+          "call_sha256": "ed8c79371bf12a4e1980e5ae5553db4430d38ccef40f26f87087a3c5ae96559c",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 3535,
+          "sha256": "65569e25141a1c8c94be0006e16a11453b23235543ee52f1e4ca7d4e4bf0619a"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 8759,
+          "sha256": "c7d3e3e0ca28d2f2617a3c20fa70944b86e16ae3e2e52f091b0a1f856e151703"
+        },
+        "summary/insight.md": {
+          "bytes": 3889,
+          "sha256": "163652851722d1e5ee6b081a7169bafaffe28800b10bcf596f222f0acea4827b"
+        },
+        "summary/summary.md": {
+          "bytes": 14775,
+          "sha256": "56c0078c67d2a0563b4666a6c9dfe3ad1faf606a2fbf5e71c8712ef3bcdfff07"
+        }
+      },
+      "failed_stage": null,
+      "input_bytes": 8186338,
+      "input_integrity_verified": true,
+      "input_sha256": "a17afa13e3296665a8255f8304a12ec18da937213be639dff37c6985d2acc97c",
+      "reason": null,
+      "redaction_observed_counts": {
+        "insights": 10,
+        "numbered_ids_sequential": true,
+        "summary_lines": 33
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-005.jsonl.oxygen-agents",
+      "status": "complete",
+      "summary_observed_counts": {
+        "insights": 10,
+        "numbered_ids_sequential": true,
+        "summary_lines": 57
+      },
+      "trajectory": "trajectory-005.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_7848d64a379cfb31",
+          "call_sha256": "e7db2034c9b9f6170bdd157ec6b1ee7251059a1954156986d3a3dc440f082e77",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_7848d64a379cfb31",
+          "call_sha256": "990d198b918c58ba9e78c900bcab8c03e2f583180c80f6aded33972ecc0d45b6",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 4220,
+          "sha256": "ea3a758276dfc180e08c0580d7f0ce10f6331d019295d6eaec543249b6e9d4ef"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 6746,
+          "sha256": "db0c140740f7917ab6b541febecfd15df80c7603833250cfd6da738487477d51"
+        },
+        "summary/insight.md": {
+          "bytes": 5111,
+          "sha256": "191bff70872b28fbd89933b0558c965cf48411396cdf23ab30a006de33afc0d5"
+        },
+        "summary/summary.md": {
+          "bytes": 16038,
+          "sha256": "7c938856d37ee48e314361ca0e9c62b94ff9b069f7b108d9b55ad70e90e6b35f"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 4176933,
+      "input_integrity_verified": true,
+      "input_sha256": "f1564d20575ad11293bee457e8101d44add01ea12910356d9155ac74c1d8af41",
+      "reason": "invalid_summary_sections",
+      "redaction_observed_counts": {
+        "insights": 12,
+        "numbered_ids_sequential": true,
+        "summary_lines": 37
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-006.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 12,
+        "numbered_ids_sequential": true,
+        "summary_lines": 57
+      },
+      "trajectory": "trajectory-006.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_13f17a37a181f5cd",
+          "call_sha256": "a6609549c4181f4070b1f0a85d134f93a7a9fcbf92413f8c0cd6f1db55ea3375",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_13f17a37a181f5cd",
+          "call_sha256": "53fa4b1d2bbf8b79f1b292ba56b915a056a0652eb30826497b75c7c25268a6bf",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 3399,
+          "sha256": "9a670da8ca2f1e6047321203e8d131907cfd852c836b61408a03a277dfbe77cc"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 6469,
+          "sha256": "3cade9e089e3b2e7f669ea1c30ba3a4ac1b09594c9373149deb1d56200302f23"
+        },
+        "summary/insight.md": {
+          "bytes": 3804,
+          "sha256": "ba01016e9d300a20666839983138dd4f3f8f270c2d7b047afbf8d23d1f48f13f"
+        },
+        "summary/summary.md": {
+          "bytes": 15486,
+          "sha256": "dda83b9cd998001fdd0e0daf7b3432d6a1b9d4cb558139113741cd384eceb8d0"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 3955312,
+      "input_integrity_verified": true,
+      "input_sha256": "d94128fcaff6a8f2b61addef03c97dbafb7f348d5ae0802d3c8cef1968943e2b",
+      "reason": "invalid_summary_line_ids",
+      "redaction_observed_counts": {
+        "insights": 10,
+        "numbered_ids_sequential": true,
+        "summary_lines": 33
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-007.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 10,
+        "numbered_ids_sequential": true,
+        "summary_lines": 50
+      },
+      "trajectory": "trajectory-007.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_3ce98fbff64ac1f4",
+          "call_sha256": "7a1c24d0f574272bfc2731c36966639932b3e2d837a8c0437fcdbb0f2de85b24",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_3ce98fbff64ac1f4",
+          "call_sha256": "202a7aea2bf8b7953e1226cd3ca799383a4eef4e557064cd9eba53b79dcd5ae2",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "summary/insight.md": {
+          "bytes": 4348,
+          "sha256": "0dc3a5a544fa1b511586a424ce84389cea38d6380a70a820af42e799f0cf8b21"
+        },
+        "summary/summary.md": {
+          "bytes": 20819,
+          "sha256": "c3476d29ba1c675d64c2bd0725a9a5a7d2e5ee13ab56e455112b2c095e6e3c0c"
+        }
+      },
+      "failed_stage": "summary",
+      "input_bytes": 5272711,
+      "input_integrity_verified": true,
+      "input_sha256": "f0eea32c7ada4bf3733ab5bf50641d5f03f77b12d6a6011994cf394e8c861589",
+      "reason": "invalid_evidence_references",
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-008.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 12,
+        "numbered_ids_sequential": true,
+        "summary_lines": 72
+      },
+      "trajectory": "trajectory-008.jsonl",
+      "workers": {
+        "summary": {
+          "agent": "/root/oxygen_summary_f143127393ecc1af",
+          "call_sha256": "06a70f3755276eb1feb9d3f61c2f68787c2bf777aed176603b8747efceb5aa84",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 3097,
+          "sha256": "f79c5811fa4102d00b9f8ae656bda61a4487db0573a04b8739929185301e392c"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 6500,
+          "sha256": "b639d101eaa693cd4dc1a988e90c4bde9bb2a0fc4aa0e178937f9917b0c11c45"
+        },
+        "summary/insight.md": {
+          "bytes": 4254,
+          "sha256": "761f2216e84f27b7b2f8a2baadc19444d08fd29e46cc1467f0a7640a8da2aace"
+        },
+        "summary/summary.md": {
+          "bytes": 15585,
+          "sha256": "5cb21f1b90f7d59b6691bb0078674ebccd1178f542e3ace3ff3a35af21eda495"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 10430869,
+      "input_integrity_verified": true,
+      "input_sha256": "2187dbfce677564aa1b616e859bb8b5055884ed15a75d989ed5c29052fd885a5",
+      "reason": "invalid_summary_sections",
+      "redaction_observed_counts": {
+        "insights": 8,
+        "numbered_ids_sequential": true,
+        "summary_lines": 30
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-009.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 9,
+        "numbered_ids_sequential": true,
+        "summary_lines": 42
+      },
+      "trajectory": "trajectory-009.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_f7d6403cf8db548d",
+          "call_sha256": "fc8891a56c77b98d0d1aca8e2715291d547272eb2a438fbf6bccab5119f16788",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_f7d6403cf8db548d",
+          "call_sha256": "95afbc0dffdf18f5d464c23a10a0a1342d6fa8d51aba3488c5414af4959b3a5b",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 3418,
+          "sha256": "bcf4010bdb17baa6f3f8cc2883715dff0174a1e8a2b68353ab18c97bcdfb066b"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 6755,
+          "sha256": "2382845a0cbf8aee963f25c0a3f7e9c6b926280d48ba59768217a2b8fc27c656"
+        },
+        "summary/insight.md": {
+          "bytes": 3905,
+          "sha256": "c0cfaa6301ca7f1076c8cc61a041b335fcb3f1a7064198bd248a5fcfa2e3d489"
+        },
+        "summary/summary.md": {
+          "bytes": 17680,
+          "sha256": "b128fb312365dbb5923b6898d09261bcf4aafa38c79931f320505905d019b810"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 8178003,
+      "input_integrity_verified": true,
+      "input_sha256": "813dfee8a10471adbaf8ac64bd3a2736de8e3a023910f991f7d543397b47cc25",
+      "reason": "invalid_summary_line_ids",
+      "redaction_observed_counts": {
+        "insights": 9,
+        "numbered_ids_sequential": true,
+        "summary_lines": 32
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-010.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 9,
+        "numbered_ids_sequential": true,
+        "summary_lines": 55
+      },
+      "trajectory": "trajectory-010.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_2c52368e1bb98993",
+          "call_sha256": "d625bb848823fa304546af62355e3824739e9d1e357c5e4af3adbdfbfaea8e4a",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_2c52368e1bb98993",
+          "call_sha256": "6882f5d6dfae45a2330e1b75f228af3775edbff8ea0550eda1ec0a279654c21c",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 1998,
+          "sha256": "839027850c5b8bbe1ad661a3433820e3c751b2dced1238e903d1f166a7aae1fc"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 4566,
+          "sha256": "705a7292acc794f9740d6eea82858789ed012a1f03b1af65eb053d88a0a66e79"
+        },
+        "summary/insight.md": {
+          "bytes": 2754,
+          "sha256": "d12227f8f0b1da6725c69cad216eeca2da67e6a304cc832d24dcb69ebace7835"
+        },
+        "summary/summary.md": {
+          "bytes": 10780,
+          "sha256": "a287e0d7aa7f399a276e333718cd7d011ff55470134a0430f8a48b60c0241fe0"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 977082,
+      "input_integrity_verified": true,
+      "input_sha256": "cf3f5102e00d0d71e66aa5fd3505571b654f7d00939712b833c64abbcfd01fce",
+      "reason": "invalid_summary_sections",
+      "redaction_observed_counts": {
+        "insights": 7,
+        "numbered_ids_sequential": true,
+        "summary_lines": 22
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-011.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 8,
+        "numbered_ids_sequential": true,
+        "summary_lines": 35
+      },
+      "trajectory": "trajectory-011.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_31fc18334100f01d",
+          "call_sha256": "8d045d4e0c2b7a5cf7c2b1af3ff28c25e490f8ab370a48c8d52ea93c988353ee",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_31fc18334100f01d",
+          "call_sha256": "1e3378d9fc4ee1859bfe7b14f055c45b7211e39a2db4bd85bd72aea1f315985c",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 2396,
+          "sha256": "c2dc25e0f5cfcd55ccb7a8b103ab6dcea37c586d0cd0fa708303bb5ed62aa562"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 4248,
+          "sha256": "49db208a35e8cedff648cc014e1df822551c07f50d6562cc36e79b738b5f5e6e"
+        },
+        "summary/insight.md": {
+          "bytes": 4059,
+          "sha256": "ce60494495b122e3c0b931f976e1df091f678172bdd9517c9be1c3228cf23915"
+        },
+        "summary/summary.md": {
+          "bytes": 15184,
+          "sha256": "7b351b8f7a6eb7f910e3d2a988af99cbff2c76920d9421a3f35d7099028b1498"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 10457403,
+      "input_integrity_verified": true,
+      "input_sha256": "68e9d88416609b9208cee423570b8b2656de34832d63f5852d52faa3a24359c7",
+      "reason": "invalid_summary_sections",
+      "redaction_observed_counts": {
+        "insights": 8,
+        "numbered_ids_sequential": true,
+        "summary_lines": 22
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-012.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 11,
+        "numbered_ids_sequential": true,
+        "summary_lines": 51
+      },
+      "trajectory": "trajectory-012.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_a65db060e40d4274",
+          "call_sha256": "65499d0b85bdf4a0f2b4dd3b74cc8099362adf249a4b14baa8d19d944b415092",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_a65db060e40d4274",
+          "call_sha256": "a28162221e87d24da95151f548e4dd37d605238fd58977a3e0de037b1aa2a5bc",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 2963,
+          "sha256": "0131fd19ce25c5b4ccee15e6c4101c18e8084ca8a67fdca92091df1a20e62fb4"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 6102,
+          "sha256": "88ceb1508aab40a618bd6c680954373daa934ab3bb9d0acbb4adb25cb4da8692"
+        },
+        "summary/insight.md": {
+          "bytes": 3374,
+          "sha256": "b71bb94e65c435df2d4b6ca5cc37e43641d4ba0fc41c202523dcd5c6bc840df8"
+        },
+        "summary/summary.md": {
+          "bytes": 16536,
+          "sha256": "b02ca6c2f4b19a21571fcea62cb9377066878a4f17f0d9c966626df432c90a1a"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 8050980,
+      "input_integrity_verified": true,
+      "input_sha256": "8ba62c67a1d2697bcb4cc7bca977259ca2a12e20dea2def2036dd4781b48fd95",
+      "reason": "invalid_summary_line_ids",
+      "redaction_observed_counts": {
+        "insights": 9,
+        "numbered_ids_sequential": true,
+        "summary_lines": 30
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-013.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 9,
+        "numbered_ids_sequential": true,
+        "summary_lines": 49
+      },
+      "trajectory": "trajectory-013.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_8195b77ad40c80a6",
+          "call_sha256": "7e54d6c3ddda6526348788047be8f943bbd4e7c727597ea919e74b41ca46758d",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_8195b77ad40c80a6",
+          "call_sha256": "5bf12bbf485522eb3fda4dab3bc972df1430cd0170cde9bc9f83e2d1c0019a1d",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 2752,
+          "sha256": "9ad624973cac9b5382dc11cc2bcd7985250622670506d9b80cad99c2dd0c7069"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 7841,
+          "sha256": "796331347d83dd4cdd205f30e0d13ce269b5b758ee3e60af2ad30e08402c507e"
+        },
+        "summary/insight.md": {
+          "bytes": 3357,
+          "sha256": "cbd881ff56c4a98f2f040e2ed495e92405368ebc4ae400fde3715f120ea9cf5c"
+        },
+        "summary/summary.md": {
+          "bytes": 11747,
+          "sha256": "4f48916630c87b9a349cbcd8d6ae28a324674ea66fa54260158bacd7a0892720"
+        }
+      },
+      "failed_stage": null,
+      "input_bytes": 4933094,
+      "input_integrity_verified": true,
+      "input_sha256": "6328a83fe7aacd0133f4e335220226d37ee4e2176117b2f45e80e28f6dfcc508",
+      "reason": null,
+      "redaction_observed_counts": {
+        "insights": 10,
+        "numbered_ids_sequential": true,
+        "summary_lines": 28
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-014.jsonl.oxygen-agents",
+      "status": "complete",
+      "summary_observed_counts": {
+        "insights": 10,
+        "numbered_ids_sequential": true,
+        "summary_lines": 42
+      },
+      "trajectory": "trajectory-014.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_b520ecde0e86f5bd",
+          "call_sha256": "e52e3bb4dc1319ab484a6d51f64f58547a63bb0cd6cb79032313d61a65bfb7ec",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_b520ecde0e86f5bd",
+          "call_sha256": "ea020edbd6df4a404937605068f13c6101af7d6159d89a50a2140e499d90e90e",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 853,
+          "sha256": "b7934ebfd9cd8f74d1e40a210aabae1ebc5ab7baf6b8bb5f1f0efb29caf166b4"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 1443,
+          "sha256": "c99e417e2763938ec3ed7cead26a1dc9842f5166fc1c48a32f8fe518e93adbd9"
+        },
+        "summary/insight.md": {
+          "bytes": 1008,
+          "sha256": "0496fd25ad7f3a6bfdf8514449c9ffb15b6e0890a96c1ab7e3da8cd99688c4c9"
+        },
+        "summary/summary.md": {
+          "bytes": 3990,
+          "sha256": "d5b7f4fb4edcf2cbb998801683c274d7ae8a2d994baaeb6affd3ebb8850576d1"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 399130,
+      "input_integrity_verified": true,
+      "input_sha256": "05db26faf3b23eaa7b6e9b2718da6092286d05fb7499c11af69519ff5e3192b6",
+      "reason": "invalid_summary_line_ids",
+      "redaction_observed_counts": {
+        "insights": 3,
+        "numbered_ids_sequential": true,
+        "summary_lines": 10
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-015.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 3,
+        "numbered_ids_sequential": true,
+        "summary_lines": 15
+      },
+      "trajectory": "trajectory-015.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_93ee91bec1508808",
+          "call_sha256": "b44aab75258a373e4cc540459b23ed368d8117cade04abf2f23a6a33bb4a326a",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_93ee91bec1508808",
+          "call_sha256": "eb2b17a1a46c2a9838fa0a776595595896021430c8f748a56bcbce1b2a86dcb7",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    },
+    {
+      "artifacts": {
+        "redaction/insight_redacted.md": {
+          "bytes": 1659,
+          "sha256": "cf77cfda58739a68f952c96756e25d7c90c516a9bbc67ec1ad29604665f5b44c"
+        },
+        "redaction/summary_redacted.md": {
+          "bytes": 2605,
+          "sha256": "f5883ad4f254673bf46b7d7b7de60b589c9c9681150033fff8ebbdb0fd32f9db"
+        },
+        "summary/insight.md": {
+          "bytes": 1799,
+          "sha256": "81f9b1f09894fb335691794e0087162bd240e8337a9b1570c04a6c6b4e8faa73"
+        },
+        "summary/summary.md": {
+          "bytes": 6315,
+          "sha256": "79674568229f5a23819adbdf2e8aef6b161ba22c419d7aa39d63a646937dc4a0"
+        }
+      },
+      "failed_stage": "redaction",
+      "input_bytes": 588120,
+      "input_integrity_verified": true,
+      "input_sha256": "b98875beef7c9f7aaa274f013705baf0a9011a7f81815fb89b9e47adc33d9139",
+      "reason": "invalid_summary_line_ids",
+      "redaction_observed_counts": {
+        "insights": 5,
+        "numbered_ids_sequential": true,
+        "summary_lines": 15
+      },
+      "run_directory": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-016.jsonl.oxygen-agents",
+      "status": "validation_failed",
+      "summary_observed_counts": {
+        "insights": 5,
+        "numbered_ids_sequential": true,
+        "summary_lines": 18
+      },
+      "trajectory": "trajectory-016.jsonl",
+      "workers": {
+        "redaction": {
+          "agent": "/root/oxygen_redaction_0abae31762195391",
+          "call_sha256": "2272f19f484b35a8de5da3b09bc00921852337f3997afb2b7a4a324193d29b68",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        },
+        "summary": {
+          "agent": "/root/oxygen_summary_0abae31762195391",
+          "call_sha256": "00204771da4f289b1ad6236da77ebe7748d2b0b791bb477f5c7ef1a95c82fc43",
+          "intended_call_verified": true,
+          "reported_status": "complete"
+        }
+      }
+    }
+  ],
+  "notes": [
+    "All worker dispatches used gpt-5.6-sol, medium reasoning, and fork_turns=none. The fixed wrappers and repository prompt contents were included in each dispatched message.",
+    "Before any worker was dispatched, the helper validator was updated to recognize the current hierarchical summary prompt. The initial unexecuted preparations were preserved in preflight-before-hierarchy-validator; all actual dispatches used one consistent configuration.",
+    "The validator also applies the three-level layout requirement to redactions, although sensitive-redaction.md does not explicitly require preservation of that layout. Rejected redaction outputs have sequential numbered lines; layout rejection does not establish content failure or privacy correctness.",
+    "Trajectory 008 used evidence ranges instead of individually listed references. Its summary was retained and redaction was not dispatched after validation failed.",
+    "No worker was retried and no generated prose was repaired by the parent. Raw inputs, frozen copies, accepted summaries, and saved intended calls passed integrity checks. Saved calls establish intended arguments; runtime tool logs remain the execution authority.",
+    "Artifacts remain private and local. Contributor review is required before release."
+  ],
+  "private_permissions_verified": true
+}

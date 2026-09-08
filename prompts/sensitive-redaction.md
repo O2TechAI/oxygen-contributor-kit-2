@@ -67,3 +67,53 @@ Output requirements:
 - Ensure every `Evidence:` reference in `insight_redacted.md` points to an existing, sufficient summary line.
 - If redaction removes an insight’s support, narrow, rewrite, or remove that insight rather than leaving an unsupported claim.
 - Do not introduce new facts.
+
+## `summary_redacted.md` structure
+
+Use these exact headings and section order. Preserve the output-format labels `Gxxx`, `Lxxx`, and `Ixxx`; these are navigation labels, not source metadata.
+
+```markdown
+# Trajectory summary
+
+<one concise paragraph summarizing the redacted groups and this segment's contribution to the ongoing project>
+
+# Summary groups
+
+## G001
+
+Lines: L001-L006
+
+<one concise group summary>
+
+## G002
+
+Lines: L007-L012
+
+<one concise group summary>
+
+# Summary lines
+
+L001 ...
+L002 ...
+L003 ...
+```
+
+Adapt the number of groups and lines to the retained content. After redaction:
+
+- Renumber retained Summary lines sequentially, then rebuild sequentially numbered groups. Each group must reference one contiguous range of final lines; groups must be ordered, non-overlapping, and cover every line exactly once.
+- Write each group paragraph from its redacted lines, then rewrite the Trajectory summary from those group paragraphs. Do not retain sensitive details in higher-level summaries after removing them from the lines.
+- Preserve the exact headings above even when groups or lines are removed. If no safe Summary content remains, both output files may be empty; do not invent placeholder content.
+
+## `insight_redacted.md` structure
+
+Use sequential insight IDs and individually listed, comma-separated final Summary line IDs in `Evidence:`; do not use ranges here.
+
+```markdown
+# I001
+
+Evidence: L003, L007, L011
+
+<redacted insight>
+```
+
+Update all evidence references after renumbering. If no supported insights remain, leave this file empty.

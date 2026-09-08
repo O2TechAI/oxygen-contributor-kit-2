@@ -1,0 +1,49 @@
+{
+  "complete": true,
+  "configuration": {
+    "fork_turns": "none",
+    "helper_sha256": "afc7a78fafd5f4cf9f50a317ef144372bef14288578b3054329bd3338ecb3730",
+    "model": "gpt-5.6-sol",
+    "prompt_sha256": {
+      "redaction": "1aa354be5ffe5bfd865944293cd0cb14bd56a0161bd4e4ff75a9dbc38f9933e6",
+      "summary": "efea06626dcb0d6071d214c64815a9eb5ba157c6c1990e5bda98c7c44850f062"
+    },
+    "protocol_version": 1,
+    "reasoning_effort": "medium",
+    "template_sha256": {
+      "redaction": "9f212bc9d4338333c81cc5c17356440d5f88630e73e79aa0c6cab7c4c56c0f7a",
+      "summary": "8fb5b0356d1ec51cae6f3db78ee9f10762538c558cbe6e21e1f7ef9ec1def23e"
+    },
+    "tool": "collaboration.spawn_agent",
+    "tools_and_sandbox": "inherited from the host; not independently configurable by this tool"
+  },
+  "input_bytes": 4933094,
+  "input_json_path": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-014.jsonl",
+  "input_sha256": "6328a83fe7aacd0133f4e335220226d37ee4e2176117b2f45e80e28f6dfcc508",
+  "stages": {
+    "redaction": {
+      "call_sha256": "e52e3bb4dc1319ab484a6d51f64f58547a63bb0cd6cb79032313d61a65bfb7ec",
+      "outputs": {
+        "insights": 10,
+        "sha256": {
+          "insight_redacted.md": "9ad624973cac9b5382dc11cc2bcd7985250622670506d9b80cad99c2dd0c7069",
+          "summary_redacted.md": "796331347d83dd4cdd205f30e0d13ce269b5b758ee3e60af2ad30e08402c507e"
+        },
+        "summary_lines": 28
+      },
+      "status": "complete"
+    },
+    "summary": {
+      "call_sha256": "ea020edbd6df4a404937605068f13c6101af7d6159d89a50a2140e499d90e90e",
+      "outputs": {
+        "insights": 10,
+        "sha256": {
+          "insight.md": "cbd881ff56c4a98f2f040e2ed495e92405368ebc4ae400fde3715f120ea9cf5c",
+          "summary.md": "4f48916630c87b9a349cbcd8d6ae28a324674ea66fa54260158bacd7a0892720"
+        },
+        "summary_lines": 42
+      },
+      "status": "complete"
+    }
+  }
+}
