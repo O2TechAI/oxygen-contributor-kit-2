@@ -1,0 +1,69 @@
+{
+  "complete": true,
+  "configuration": {
+    "fork_turns": "none",
+    "helper_sha256": "afc7a78fafd5f4cf9f50a317ef144372bef14288578b3054329bd3338ecb3730",
+    "model": "gpt-5.6-sol",
+    "prompt_sha256": {
+      "redaction": "52a720ee3d27f077f5bc9940e3f9ed3b0a7788000f03da7ef8a99a4f7e089b11",
+      "summary": "efea06626dcb0d6071d214c64815a9eb5ba157c6c1990e5bda98c7c44850f062"
+    },
+    "protocol_version": 1,
+    "reasoning_effort": "medium",
+    "template_sha256": {
+      "redaction": "4fb053e277fd7e1a818cc15a91109395766b25869fa6bff85adba6e22763c7d8",
+      "summary": "8fb5b0356d1ec51cae6f3db78ee9f10762538c558cbe6e21e1f7ef9ec1def23e"
+    },
+    "tool": "collaboration.spawn_agent",
+    "tools_and_sandbox": "inherited from the host; not independently configurable by this tool"
+  },
+  "input_bytes": 399130,
+  "input_json_path": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/redaction-rerun-2026-09-07/trajectory-015.jsonl",
+  "input_sha256": "05db26faf3b23eaa7b6e9b2718da6092286d05fb7499c11af69519ff5e3192b6",
+  "resubmission": {
+    "authorization": "User requested resubmission with the revised redaction prompt.",
+    "previous_run": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-015.jsonl.oxygen-agents",
+    "summary_worker_rerun": false
+  },
+  "stages": {
+    "redaction": {
+      "call_sha256": "0fc6a22bfdec84e526e4c61d0ee2663073cf3e5deb6a5d6aa21b5f8105650691",
+      "outputs": {
+        "insights": 3,
+        "sha256": {
+          "insight_redacted.md": "957c67f79ea40cff47783c9f49b1343402ea4cd4828fb983d9d9150ef82aecbe",
+          "summary_redacted.md": "a6459e191f0c97196a2e877bcd310e2d95d33234d3cf115da84ea507c9b4ea69"
+        },
+        "summary_lines": 9
+      },
+      "status": "complete"
+    },
+    "summary": {
+      "evidence_ranges_expanded": 0,
+      "origin": "imported_previous_worker_outputs",
+      "outputs": {
+        "insights": 3,
+        "sha256": {
+          "insight.md": "0496fd25ad7f3a6bfdf8514449c9ffb15b6e0890a96c1ab7e3da8cd99688c4c9",
+          "summary.md": "d5b7f4fb4edcf2cbb998801683c274d7ae8a2d994baaeb6affd3ebb8850576d1"
+        },
+        "summary_lines": 15
+      },
+      "previous_manifest_sha256": "8cba650c5d5e1224a7f78f8846c826c23a60ff864d975833823896341fe2e84f",
+      "previous_summary_call_sha256": "eb2b17a1a46c2a9838fa0a776595595896021430c8f748a56bcbce1b2a86dcb7",
+      "provenance": {
+        "insight.md": {
+          "imported_sha256": "0496fd25ad7f3a6bfdf8514449c9ffb15b6e0890a96c1ab7e3da8cd99688c4c9",
+          "original_sha256": "0496fd25ad7f3a6bfdf8514449c9ffb15b6e0890a96c1ab7e3da8cd99688c4c9",
+          "source": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-015.jsonl.oxygen-agents/summary/insight.md"
+        },
+        "summary.md": {
+          "imported_sha256": "d5b7f4fb4edcf2cbb998801683c274d7ae8a2d994baaeb6affd3ebb8850576d1",
+          "original_sha256": "d5b7f4fb4edcf2cbb998801683c274d7ae8a2d994baaeb6affd3ebb8850576d1",
+          "source": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-015.jsonl.oxygen-agents/summary/summary.md"
+        }
+      },
+      "status": "complete"
+    }
+  }
+}

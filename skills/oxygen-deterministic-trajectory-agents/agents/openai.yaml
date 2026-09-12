@@ -1,0 +1,4 @@
+interface:
+  display_name: "Oxygen Deterministic Trajectory Agents"
+  short_description: "Fixed subagent calls with one trajectory path parameter"
+  default_prompt: "Use $oxygen-deterministic-trajectory-agents to process the supplied trajectory path with fixed fresh summary and redaction subagents."

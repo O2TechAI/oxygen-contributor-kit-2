@@ -1,0 +1,4 @@
+interface:
+  display_name: "Oxygen Collect Workspace Sessions"
+  short_description: "Collect main workspace sessions for trajectory stripping"
+  default_prompt: "Use $oxygen-collect-workspace-sessions to collect private snapshots of main Codex sessions for a designated workspace, excluding subagents."

@@ -1,0 +1,41 @@
+{
+  "complete": false,
+  "configuration": {
+    "fork_turns": "none",
+    "helper_sha256": "afc7a78fafd5f4cf9f50a317ef144372bef14288578b3054329bd3338ecb3730",
+    "model": "gpt-5.6-sol",
+    "prompt_sha256": {
+      "redaction": "1aa354be5ffe5bfd865944293cd0cb14bd56a0161bd4e4ff75a9dbc38f9933e6",
+      "summary": "efea06626dcb0d6071d214c64815a9eb5ba157c6c1990e5bda98c7c44850f062"
+    },
+    "protocol_version": 1,
+    "reasoning_effort": "medium",
+    "template_sha256": {
+      "redaction": "9f212bc9d4338333c81cc5c17356440d5f88630e73e79aa0c6cab7c4c56c0f7a",
+      "summary": "8fb5b0356d1ec51cae6f3db78ee9f10762538c558cbe6e21e1f7ef9ec1def23e"
+    },
+    "tool": "collaboration.spawn_agent",
+    "tools_and_sandbox": "inherited from the host; not independently configurable by this tool"
+  },
+  "input_bytes": 3955312,
+  "input_json_path": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectories/trajectory-007.jsonl",
+  "input_sha256": "d94128fcaff6a8f2b61addef03c97dbafb7f348d5ae0802d3c8cef1968943e2b",
+  "stages": {
+    "redaction": {
+      "call_sha256": "7a1c24d0f574272bfc2731c36966639932b3e2d837a8c0437fcdbb0f2de85b24",
+      "status": "issued"
+    },
+    "summary": {
+      "call_sha256": "202a7aea2bf8b7953e1226cd3ca799383a4eef4e557064cd9eba53b79dcd5ae2",
+      "outputs": {
+        "insights": 10,
+        "sha256": {
+          "insight.md": "ba01016e9d300a20666839983138dd4f3f8f270c2d7b047afbf8d23d1f48f13f",
+          "summary.md": "dda83b9cd998001fdd0e0daf7b3432d6a1b9d4cb558139113741cd384eceb8d0"
+        },
+        "summary_lines": 50
+      },
+      "status": "complete"
+    }
+  }
+}

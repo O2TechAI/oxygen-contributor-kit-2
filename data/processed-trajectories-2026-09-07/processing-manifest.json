@@ -1,0 +1,35 @@
+{
+  "schema": "oxygen.processed-trajectories",
+  "version": 1,
+  "trajectory_count": 16,
+  "source_collection_manifest": "../awaiting-tool-output-stripping-2026-09-07/manifest.json",
+  "stripped_trajectory_directory": "../stripped-trajectories-2026-09-07/trajectories",
+  "strip_report_directory": "../stripped-trajectories-2026-09-07/reports",
+  "mapping": "trajectory-NNN maps to the collection manifest sessions array at zero-based index NNN-1",
+  "first_prompt": "../../prompts/summary-and-insight.md",
+  "second_prompt": "../../prompts/sensitive-redaction.md",
+  "outputs_per_trajectory": [
+    "summary.md",
+    "insight.md",
+    "summary_redacted.md",
+    "insight_redacted.md"
+  ],
+  "second_pass_input": [
+    "summary.md",
+    "insight.md"
+  ],
+  "second_pass_raw_trajectory_access": false,
+  "redaction_replacement": {
+    "source_directory": "../redaction-rerun-2026-09-07",
+    "source_report": "../redaction-rerun-2026-09-07/report.json",
+    "model": "gpt-5.6-sol",
+    "reasoning_effort": "medium",
+    "prompt_sha256": "52a720ee3d27f077f5bc9940e3f9ed3b0a7788000f03da7ef8a99a4f7e089b11",
+    "validation_passed": 16,
+    "validation_failed": 0,
+    "redacted_summary_lines": 433,
+    "redacted_insights": 122,
+    "structure": "Trajectory summary -> Summary groups -> Summary lines"
+  },
+  "complete": true
+}
