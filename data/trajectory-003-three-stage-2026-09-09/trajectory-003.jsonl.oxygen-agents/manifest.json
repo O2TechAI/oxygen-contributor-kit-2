@@ -1,0 +1,70 @@
+{
+  "complete": true,
+  "configuration": {
+    "fork_turns": "none",
+    "helper_sha256": "26cdc1115b70ce052872459d983f3a905ecb2d2f71a2faa811fa404d05752dcd",
+    "labeler_sha256": "64c5218fce07e87a8ef3d4976587b1418a39c4a744853302caeb4e9f54459f4e",
+    "model": "gpt-5.6-sol",
+    "prompt_sha256": {
+      "insight": "75e5d1e70858c7efb3361ac02cc99caf11df6f186ae9750f8210f9b465e32503",
+      "redaction": "34db5ea8db7a4e32e5da54548852e00d597c6516eff7a916fc877061cb18e538",
+      "summary": "0002874f99c7f34f5b480c3b879c14c80ef99e3eac634b87881587d654a212b8"
+    },
+    "protocol_version": 3,
+    "reasoning_effort": "medium",
+    "template_sha256": {
+      "insight": "3dc6c88a20661744f2ba0850d8fa278f25f52f0ad67b546b7ace72f53e0fe748",
+      "redaction": "ba2c9edb2dcd13367ce2ed367cc71aa5c02e6b6871759bf25a05e80d51d2de4e",
+      "summary": "3bba3dac8351daafc75f01dc5bdfb4c6cbe5ff1b253fa0d9d4f8ce30370d5f26"
+    },
+    "tool": "collaboration.spawn_agent",
+    "tools_and_sandbox": "inherited from the host; not independently configurable by this tool"
+  },
+  "frozen_file": "trajectory.json",
+  "input_bytes": 3849254,
+  "input_path": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/trajectory-003-three-stage-2026-09-09/trajectory-003.jsonl",
+  "input_sha256": "e666667d9858881914eed6c805e32ad39d710aa13609367798991f51bd047fe0",
+  "stages": {
+    "insight": {
+      "call_sha256": "8f2144cca6ef68215201b9cb144806ab8f27f09ea6529d91dd8c334537ed3d1e",
+      "outputs": {
+        "evidence_lines": 38,
+        "insights": 6,
+        "sha256": {
+          "insight.md": "aeff2a8b634938ae71bbb0f6e9bf5f2b2d645885bd83c4241163bb327a3c1b1f",
+          "summary.md": "8d571a90745f9ba175bbcbbab57dc794909ab09dc5c6561af4a08aba03e01a44",
+          "summary_labeled.md": "12af02073e051dd1b1fd8cd005ec6dfbb14f7df3b3bf790b8e7a0d06397a4326"
+        },
+        "summary_lines": 92
+      },
+      "status": "complete"
+    },
+    "redaction": {
+      "call_sha256": "3bd2bd20b6abc10b6bfff6b088be46874d98b3938d1bbb4a6b45f2f1809d22c2",
+      "outputs": {
+        "evidence_lines": 33,
+        "insights": 6,
+        "sha256": {
+          "insight_redacted.md": "1018cb6c4c71d21edfbc4b2dcae63510301adb6d3b6b226bfdda8bfd6350314b",
+          "summary_redacted.md": "4ed7b0372159b5a8fc8a844c7405bbd5879720a8bd196390edb32070d639e65b",
+          "summary_redacted_labeled.md": "a6854f03e10d10b43878988de97e691f74b47d757d0c8654f79a5ec1ddc5984b"
+        },
+        "summary_lines": 82
+      },
+      "status": "complete"
+    },
+    "summary": {
+      "call_sha256": "4eafc01d91e9b032059b6556233cf9c48b864db96f148575b8e30f4e917c230f",
+      "outputs": {
+        "evidence_lines": 38,
+        "insights": 0,
+        "sha256": {
+          "summary.md": "8d571a90745f9ba175bbcbbab57dc794909ab09dc5c6561af4a08aba03e01a44",
+          "summary_labeled.md": "12af02073e051dd1b1fd8cd005ec6dfbb14f7df3b3bf790b8e7a0d06397a4326"
+        },
+        "summary_lines": 92
+      },
+      "status": "complete"
+    }
+  }
+}

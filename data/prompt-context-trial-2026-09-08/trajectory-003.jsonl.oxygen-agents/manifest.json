@@ -1,0 +1,49 @@
+{
+  "complete": true,
+  "configuration": {
+    "fork_turns": "none",
+    "helper_sha256": "afc7a78fafd5f4cf9f50a317ef144372bef14288578b3054329bd3338ecb3730",
+    "model": "gpt-5.6-sol",
+    "prompt_sha256": {
+      "redaction": "e96ae8c4e88c37d46663935b3fa038d21984f21ce1e0b85567e4427c77fa57b0",
+      "summary": "dfa956a960e6b09588b137961717b9fb168bbcc39b88573bdb951237ee41955d"
+    },
+    "protocol_version": 1,
+    "reasoning_effort": "medium",
+    "template_sha256": {
+      "redaction": "7ebd6f499049a8891f3200dda37263d4fdd751025e1749bc55f012d760d549f5",
+      "summary": "95fadee615cb4a88329f791c19de378fc3131b76959fac540f1dcca36f740c39"
+    },
+    "tool": "collaboration.spawn_agent",
+    "tools_and_sandbox": "inherited from the host; not independently configurable by this tool"
+  },
+  "input_bytes": 3849254,
+  "input_json_path": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/prompt-context-trial-2026-09-08/trajectory-003.jsonl",
+  "input_sha256": "e666667d9858881914eed6c805e32ad39d710aa13609367798991f51bd047fe0",
+  "stages": {
+    "redaction": {
+      "call_sha256": "71c76999d02e7a76264b2ff44608194280c97361045536eee148bddc118a0566",
+      "outputs": {
+        "insights": 8,
+        "sha256": {
+          "insight_redacted.md": "9c9883af3180ce7ddba6e51f10b895eaf44fb13c8fbc0706dec9c2b83b3ce4d3",
+          "summary_redacted.md": "cfdbbe99b6823592b97270dfb6bdd325c3ba8ff650cbe8090b4d25c30be3e74a"
+        },
+        "summary_lines": 20
+      },
+      "status": "complete"
+    },
+    "summary": {
+      "call_sha256": "8b666d86cadace1b198108cf74054f67464afd97f3b6c41882701735ad958365",
+      "outputs": {
+        "insights": 10,
+        "sha256": {
+          "insight.md": "492dbe170f3fce8663b09e3f20cfb8e64b19d3073a3bc815454763f630df74cd",
+          "summary.md": "71dde48f176f907801c7c88021c40cd825a8b323cd6bb3b941e7f9378fad110b"
+        },
+        "summary_lines": 35
+      },
+      "status": "complete"
+    }
+  }
+}
