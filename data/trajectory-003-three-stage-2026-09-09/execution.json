@@ -1,0 +1,78 @@
+{
+  "original_run": "/n/holylabs/hlakkaraju_lab/Lab/zidi/user_simulation/oxygen-contributor-kit-2/data/stripped-trajectories-2026-09-07/trajectory-003.jsonl.oxygen-agents",
+  "input_sha256": "e666667d9858881914eed6c805e32ad39d710aa13609367798991f51bd047fe0",
+  "requested_max_active_workers": 16,
+  "host_max_agents_including_parent": 4,
+  "effective_max_active_workers": 3,
+  "active_workers_for_this_sequential_run": 1,
+  "stages_requested": [
+    "summary",
+    "insight",
+    "redaction"
+  ],
+  "dispatches": {
+    "summary": {
+      "agent": "/root/oxygen_summary_fc244e57917fd800",
+      "status": "complete",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "medium",
+      "fork_turns": "none"
+    },
+    "insight": {
+      "agent": "/root/oxygen_insight_fc244e57917fd800",
+      "status": "complete",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "medium",
+      "fork_turns": "none"
+    },
+    "redaction": {
+      "agent": "/root/oxygen_redaction_fc244e57917fd800",
+      "status": "complete",
+      "model": "gpt-5.6-sol",
+      "reasoning_effort": "medium",
+      "fork_turns": "none"
+    }
+  },
+  "complete": true,
+  "summary_revised_during_insight": false,
+  "validation": {
+    "behavioral_tests_passed": 32,
+    "skill_validator": "passed",
+    "source_byte_identical": true,
+    "all_label_copies_match_script": true,
+    "all_stages_accepted": true,
+    "semantic_and_release_review": "pending contributor review",
+    "private_permissions_verified": true
+  },
+  "outputs": {
+    "insight": {
+      "evidence_lines": 38,
+      "insights": 6,
+      "sha256": {
+        "insight.md": "aeff2a8b634938ae71bbb0f6e9bf5f2b2d645885bd83c4241163bb327a3c1b1f",
+        "summary.md": "8d571a90745f9ba175bbcbbab57dc794909ab09dc5c6561af4a08aba03e01a44",
+        "summary_labeled.md": "12af02073e051dd1b1fd8cd005ec6dfbb14f7df3b3bf790b8e7a0d06397a4326"
+      },
+      "summary_lines": 92
+    },
+    "redaction": {
+      "evidence_lines": 33,
+      "insights": 6,
+      "sha256": {
+        "insight_redacted.md": "1018cb6c4c71d21edfbc4b2dcae63510301adb6d3b6b226bfdda8bfd6350314b",
+        "summary_redacted.md": "4ed7b0372159b5a8fc8a844c7405bbd5879720a8bd196390edb32070d639e65b",
+        "summary_redacted_labeled.md": "a6854f03e10d10b43878988de97e691f74b47d757d0c8654f79a5ec1ddc5984b"
+      },
+      "summary_lines": 82
+    },
+    "summary": {
+      "evidence_lines": 38,
+      "insights": 0,
+      "sha256": {
+        "summary.md": "8d571a90745f9ba175bbcbbab57dc794909ab09dc5c6561af4a08aba03e01a44",
+        "summary_labeled.md": "12af02073e051dd1b1fd8cd005ec6dfbb14f7df3b3bf790b8e7a0d06397a4326"
+      },
+      "summary_lines": 92
+    }
+  }
+}

@@ -1,4 +1,4 @@
 interface:
   display_name: "Oxygen Deterministic Trajectory Agents"
-  short_description: "Fixed subagent calls with one trajectory path parameter"
-  default_prompt: "Use $oxygen-deterministic-trajectory-agents to process the supplied trajectory path with fixed fresh summary and redaction subagents."
+  short_description: "Readable summaries with Python labels and fresh insights"
+  default_prompt: "Use $oxygen-deterministic-trajectory-agents to summarize the supplied trajectory or Markdown summary, label its lines, then run fresh insight and privacy-redaction agents."
